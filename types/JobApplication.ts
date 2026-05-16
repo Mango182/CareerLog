@@ -1,10 +1,13 @@
-export type ApplicationStatus =
-  | 'Saved'
-  | 'Applied'
-  | 'Interview'
-  | 'Offer'
-  | 'Rejected'
-  | 'Ghosted';
+export const APPLICATION_STATUSES = [
+  'Saved',
+  'Applied',
+  'Interview',
+  'Offer',
+  'Rejected',
+  'Ghosted',
+] as const;
+
+export type ApplicationStatus = typeof APPLICATION_STATUSES[number];
 
 export type JobApplication = {
   id: string;
