@@ -7,6 +7,12 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+<<<<<<< Updated upstream
+=======
+import { ApplicationsProvider } from '@/context/ApplicationContext';
+import { AuthenticationProvider } from '@/context/AuthenticationContext';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
+>>>>>>> Stashed changes
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,10 +56,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      {/* <AuthenticationProvider>
+        <ApplicationsProvider> */}
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="add_application" options={{ headerShown: false}} />
+          </Stack>
+          {/* <Toast /> */}
+        {/* </ApplicationsProvider>
+      </AuthenticationProvider> */}
     </ThemeProvider>
   );
 }
