@@ -7,16 +7,13 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
-<<<<<<< Updated upstream
-=======
-import { ApplicationsProvider } from '@/context/ApplicationContext';
-import { AuthenticationProvider } from '@/context/AuthenticationContext';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
->>>>>>> Stashed changes
+// import { ApplicationsProvider } from '@/context/ApplicationContext';
+// import { AuthenticationProvider } from '@/context/AuthenticationContext';
+// import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+  ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
