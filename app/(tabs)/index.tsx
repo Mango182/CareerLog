@@ -45,11 +45,11 @@ export default function DashboardScreen() {
               </View>
 
             {/* Add Application Button */}
-            <Pressable onPress={() => router.push('/add_application')}>
+            {/* <Pressable onPress={() => router.push('/add_application')}>
               <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
                 <Text style={styles.addButtonText}>Add Application</Text>
               </View>
-            </Pressable>
+            </Pressable> */}
                 
             {/* Interviews Card */}
             <View style={styles.card} lightColor="#ebe8e8" darkColor="#1e293b">
