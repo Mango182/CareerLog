@@ -7,13 +7,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
-<<<<<<< HEAD
+import { ApplicationsProvider } from '@/context/ApplicationContext';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
-=======
-// import { ApplicationsProvider } from '@/context/ApplicationContext';
-// import { AuthenticationProvider } from '@/context/AuthenticationContext';
-// import { Toast } from 'react-native-toast-message/lib/src/Toast';
->>>>>>> origin/master
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -57,25 +52,14 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-<<<<<<< HEAD
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="add_application" options={{ headerShown: false}} />
-      </Stack>
-      <Toast />
-=======
-      {/* <AuthenticationProvider>
-        <ApplicationsProvider> */}
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="add_application" options={{ headerShown: false}} />
-          </Stack>
-          {/* <Toast /> */}
-        {/* </ApplicationsProvider>
-      </AuthenticationProvider> */}
->>>>>>> origin/master
+      <ApplicationsProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="add_application" options={{ headerShown: false}} />
+        </Stack>
+        <Toast />
+      </ApplicationsProvider>
     </ThemeProvider>
   );
 }
