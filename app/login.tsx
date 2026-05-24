@@ -23,7 +23,7 @@ const loginValidationSchema = Yup.object().shape({
 });
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
 
   const colorScheme = useColorScheme() ?? 'light';
   const theme = Colors[colorScheme];
@@ -160,6 +160,14 @@ export default function LoginScreen() {
                   {errors.password && touched.password && (
                     <Text style={styles.errorText}>{errors.password}</Text>
                   )}
+
+                  <TouchableOpacity 
+                    onPress={() => signInWithGoogle()} 
+                    style={[styles.button, { backgroundColor: '#db4437' }]}
+                  >
+                    <Ionicons name="logo-google" size={22} color="#fff" style={{ marginRight: 8 }} />
+                    <Text style={styles.buttonText}>Sign in with Google</Text>
+                  </TouchableOpacity>
 
                   {/* Forgot Password Link */}
                   <TouchableOpacity onPress={() => router.push('/signup')}>

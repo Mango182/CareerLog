@@ -1,13 +1,15 @@
+import { auth } from '@/services/firebase';
 import {
+  GoogleAuthProvider,
   User,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
-import { auth } from '@/services/firebase';
+import { Platform } from 'react-native';
 
 
 type AuthenticationContextValue = {
@@ -16,6 +18,7 @@ type AuthenticationContextValue = {
   signup: (email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 };
 
 const AuthenticationContext = createContext<AuthenticationContextValue | undefined>(
@@ -41,6 +44,16 @@ export function AuthenticationProvider({
     return unsubscribe();
   }, []);
 
+  async function signInWithGoogle() {
+    if (Platform.OS !== 'web') {
+      throw new Error('Google sign-in is currently only set up for web.');
+    }
+
+    const provider = new GoogleAuthProvider();
+
+    await signInWithPopup(auth, provider);
+  }
+
   // Sign up with email and password
   async function signup(email: string, password: string) {
     await createUserWithEmailAndPassword(auth, email, password);
@@ -65,6 +78,7 @@ export function AuthenticationProvider({
         signup,
         login,
         logout,
+        signInWithGoogle,
       }}
     >
       {children}
