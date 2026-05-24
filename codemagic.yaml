@@ -1,0 +1,37 @@
+workflows:
+  careerlog-web-check:
+    name: CareerLog Web Check
+    max_build_duration: 30
+    instance_type: linux_x2
+
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+
+    environment:
+      node: 20
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm ci
+
+      - name: Check Expo project
+        script: |
+          npx expo-doctor
+
+      - name: TypeScript check
+        script: |
+          npx tsc --noEmit
+
+      - name: Export Expo web app
+        script: |
+          npx expo export --platform web
+
+    artifacts:
+      - dist/**
