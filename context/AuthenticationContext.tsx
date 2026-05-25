@@ -37,11 +37,12 @@ export function AuthenticationProvider({
     // Listen for authentication changes
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
+      console.log('Authentication state changed:', firebaseUser?.email ?? 'No user');
       setIsLoading(false);
     });
 
     // Clean up the listener on unmount
-    return unsubscribe();
+    return unsubscribe;
   }, []);
 
   async function signInWithGoogle() {

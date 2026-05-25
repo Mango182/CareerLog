@@ -6,9 +6,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthenticationContext';
 import { applications } from '@/data/applications';
 
 export default function DashboardScreen() {
+  const { user } = useAuth();
+
   const totalApplications = applications.length;
 
   const totalInterviews = applications.filter(app => app.status === 'Interview').length;
@@ -25,8 +28,19 @@ export default function DashboardScreen() {
         {/* Main container */}
         <View style={styles.container}>
 
-          <Pressable onPress={() => router.push('/login')}>
-            <Ionicons name="person-circle-outline" size={24} color={theme.text} style={{ alignSelf: 'flex-end' }} />
+          {/* Temparary SignIn text */}
+          <Text style={{textAlign: 'center', fontSize: 18, marginBottom: 8 }}>
+            {user? `${user.email}` :  'Not signed in'}
+          </Text>
+
+          {/* Profile Button */}
+          <Pressable onPress={() => router.push(user ? '/profile' : '/login')}>
+            <Ionicons
+              name={user ? 'person-circle' : 'person-circle-outline'}
+              size={24}
+              color={theme.text}
+              style={{ alignSelf: 'flex-end' }}
+            />
           </Pressable>
           
           {/* Title and Subtitle */}
