@@ -86,6 +86,11 @@ workflows:
         script: |
           npx expo prebuild --platform ios --non-interactive
 
+      - name: Show generated iOS files
+        script: |
+          echo "iOS folder contents:"
+          ls -la ios
+
       - name: Install iOS pods
         script: |
           cd ios
@@ -117,7 +122,14 @@ workflows:
           cp -R "$APP_PATH" build/ios/ipa/Payload/CareerLog.app
 
           cd build/ios/ipa
-          zip -r CareerLog-AltStore-unsigned.ipa Payload
+
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-AltStore-unsigned.ipa
+
+          echo "IPA file created:"
+          ls -lh CareerLog-AltStore-unsigned.ipa
+
+          echo "IPA contents:"
+          unzip -l CareerLog-AltStore-unsigned.ipa | head -50
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -165,6 +177,11 @@ workflows:
         script: |
           npx expo prebuild --platform all --non-interactive
 
+      - name: Show generated iOS files
+        script: |
+          echo "iOS folder contents:"
+          ls -la ios
+
       - name: Install iOS pods
         script: |
           cd ios
@@ -202,7 +219,14 @@ workflows:
           cp -R "$APP_PATH" build/ios/ipa/Payload/CareerLog.app
 
           cd build/ios/ipa
-          zip -r CareerLog-AltStore-unsigned.ipa Payload
+
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-AltStore-unsigned.ipa
+
+          echo "IPA file created:"
+          ls -lh CareerLog-AltStore-unsigned.ipa
+
+          echo "IPA contents:"
+          unzip -l CareerLog-AltStore-unsigned.ipa | head -50
 
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
