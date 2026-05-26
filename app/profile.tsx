@@ -7,25 +7,37 @@ import { Pressable, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  function linkedInPress() {
+    console.log("LinkedIn Pressed");
+  }
+
+  function githubPressed() {
+    console.log("Github Pressed");
+  }
+
+  function emailPressed() {
+    console.log("Email Pressed");
+  }
   
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
     <View style={styles.container}>
       <View style={styles.profile}>
         <Ionicons name="person-circle" size={100} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
-        <Text style={styles.nameLabel}>NAME</Text>
-        <Text style={styles.userName}>@USERNAME</Text>
+        <Text style={styles.nameLabel}>`${user?.displayName}`</Text>
+        <Text style={styles.userName}>`${user?.email}`</Text>
 
         {/* Connection Icons */}
         <View style={styles.connectionRow}>
-          <Pressable onPress={() => {console.log('LinkedIn Pressed')}}>
+          <Pressable onPress={() => linkedInPress()}>
             <Ionicons name="logo-linkedin" size={32} color="#0077B5" />
           </Pressable>
-          <Pressable onPress={() => {console.log('GitHub Pressed')}}>
+          <Pressable onPress={() => githubPressed()}>
             <Ionicons name="logo-github" size={32} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
           </Pressable>
-          <Pressable onPress={() => {console.log('Email Pressed')}}>
+          <Pressable onPress={() => emailPressed()}>
             <Ionicons name="mail" size={32} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
           </Pressable>
         </View>
@@ -34,6 +46,9 @@ export default function Profile() {
           <Text style={{ marginTop: 24, fontSize: 16, color: 'gray' }}>
             placeholder for Resume Preview
           </Text>
+
+          {/* Resume Preview */}
+          {/* This is more of a placeholder as the planned one will show a preview within the page */}
           <ResumePreview />
         </View>
       </View>
