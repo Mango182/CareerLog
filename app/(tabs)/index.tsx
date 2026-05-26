@@ -1,5 +1,4 @@
-import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Text, View } from '@/components/Themed';
@@ -33,12 +32,12 @@ export default function DashboardScreen() {
                 </Text>
               </View>
 
-            {/* Add Application Button */}
+            {/* Add Application Button
             <Pressable onPress={() => router.push('/add_application')}>
               <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
                 <Text style={styles.addButtonText}>Add Application</Text>
               </View>
-            </Pressable>
+            </Pressable> */}
                 
             {/* Interviews Card */}
             <View style={styles.card} lightColor="#ebe8e8" darkColor="#1e293b">
