@@ -58,8 +58,8 @@ export default function DashboardScreen() {
                 </Text>
               </View>
 
-            {/* Add Application Button */}
-            {/* <Pressable onPress={() => router.push('/add_application')}>
+            {/* Add Application Button
+            <Pressable onPress={() => router.push('/add_application')}>
               <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
                 <Text style={styles.addButtonText}>Add Application</Text>
               </View>
