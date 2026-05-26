@@ -1,3 +1,4 @@
+import ResumePreview from '@/components/ResumePreview';
 import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/context/AuthenticationContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +29,13 @@ export default function Profile() {
             <Ionicons name="mail" size={32} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
           </Pressable>
         </View>
+
+        <View>
+          <Text style={{ marginTop: 24, fontSize: 16, color: 'gray' }}>
+            placeholder for Resume Preview
+          </Text>
+          <ResumePreview />
+        </View>
       </View>
 
 
@@ -35,7 +43,7 @@ export default function Profile() {
         <Pressable style={styles.logoutButton} onPress={() => { 
           logout(); 
           console.log('User logged out');
-          router.push('/login');
+          router.replace('/login');
         }}>
           <Text style={styles.logoutButtonText}>Logout</Text>
         </Pressable>
