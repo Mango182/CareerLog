@@ -20,8 +20,13 @@ workflows:
 
     environment:
       node: 20
-      groups:
-        - expo_credentials
+      java: 17
+      xcode: latest
+      cocoapods: default
+
+      vars:
+        XCODE_SCHEME: "CareerLog"
+        XCODE_WORKSPACE: "CareerLog.xcworkspace"
 
     scripts:
       - name: Install dependencies
@@ -32,20 +37,50 @@ workflows:
         script: |
           npx tsc --noEmit
 
-      - name: Install EAS CLI
+      - name: Generate native projects
         script: |
-          npm install -g eas-cli
+          npx expo prebuild --platform all --non-interactive
 
-      - name: Build Android APK with EAS
+      - name: Install iOS pods
         script: |
-          eas build --platform android --profile preview --non-interactive --wait
+          cd ios
+          pod install
 
-      - name: Build iOS IPA with EAS
+      - name: Build Android debug APK
         script: |
-          eas build --platform ios --profile preview --non-interactive --wait
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Build unsigned iOS app
+        script: |
+          xcodebuild \
+            -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package unsigned iOS app as AltStore IPA
+        script: |
+          mkdir -p build/ios/ipa/Payload
+
+          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Debug-iphoneos/*.app" -type d | head -n 1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app file found"
+            exit 1
+          fi
+
+          echo "Found app at: $APP_PATH"
+
+          cp -R "$APP_PATH" build/ios/ipa/Payload/CareerLog.app
+
+          cd build/ios/ipa
+          zip -r CareerLog.ipa Payload
 
     artifacts:
-      - dist/**
-      - build/**
-      - "*.apk"
-      - "*.ipa"
+      - android/app/build/outputs/apk/debug/*.apk
+      - build/ios/ipa/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
