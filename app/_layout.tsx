@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { ApplicationsProvider } from '@/context/ApplicationContext';
+import { AuthenticationProvider } from '@/context/AuthenticationContext';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export {
@@ -52,14 +53,18 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ApplicationsProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="add_application" options={{ headerShown: false}} />
-        </Stack>
-        <Toast />
-      </ApplicationsProvider>
+      <AuthenticationProvider>
+        <ApplicationsProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="profile" options={{ headerShown: false }} />
+            <Stack.Screen name="add_application" options={{ headerShown: false}} />
+          </Stack>
+          <Toast />
+        </ApplicationsProvider> 
+      </AuthenticationProvider>
     </ThemeProvider>
   );
 }

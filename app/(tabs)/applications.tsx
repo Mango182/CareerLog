@@ -1,31 +1,143 @@
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import { applications } from '@/data/applications';
 
-export default function TabTwoScreen() {
+export default function ApplicationsScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
-    </View>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Applications</Text>
+          <Text style={styles.subtitle}>
+            Track every job, internship, and follow-up in one place.
+          </Text>
+
+          <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
+            <Text style={styles.addButtonText}>+ Add Application</Text>
+          </View>
+
+          <View style={styles.section}>
+            {applications.map((application) => (
+              <View
+                key={application.id}
+                style={styles.applicationCard}
+                lightColor="#ffffff"
+                darkColor="#1e293b"
+              >
+                <View style={styles.cardHeader} lightColor="transparent" darkColor="transparent">
+                  <View lightColor="transparent" darkColor="transparent">
+                    <Text style={styles.companyName}>{application.company}</Text>
+                    <Text style={styles.positionTitle}>{application.position}</Text>
+                  </View>
+
+                  <View style={styles.statusBadge} lightColor="#dbeafe" darkColor="#1e3a8a">
+                    <Text style={styles.statusText}>{application.status}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.details} lightColor="transparent" darkColor="transparent">
+                  {application.location && (
+                    <Text style={styles.detailText}>Location: {application.location}</Text>
+                  )}
+
+                  {application.jobType && (
+                    <Text style={styles.detailText}>Type: {application.jobType}</Text>
+                  )}
+
+                  {application.workMode && (
+                    <Text style={styles.detailText}>Work Mode: {application.workMode}</Text>
+                  )}
+
+                  {application.dateApplied && (
+                    <Text style={styles.detailText}>Applied: {application.dateApplied}</Text>
+                  )}
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 100,
+  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 12,
   },
+
+  // Title and subtitle styles
   title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  subtitle: {
+    fontSize: 16,
+    marginTop: 8,
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+
+  // Add button styles
+  addButton: {
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  section: {
+    gap: 16,
+  },
+
+  //
+  applicationCard: {
+    padding: 16,
+    borderRadius: 12,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  companyName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  positionTitle: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    alignSelf: 'flex-start',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  details: {
+    marginTop: 14,
+    gap: 4,
+  },
+  detailText: {
+    fontSize: 14,
   },
 });

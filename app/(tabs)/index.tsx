@@ -1,23 +1,48 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Text, View } from '@/components/Themed';
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
+import { useAuth } from '@/context/AuthenticationContext';
 import { applications } from '@/data/applications';
 
 export default function DashboardScreen() {
+  const { user } = useAuth();
+
   const totalApplications = applications.length;
 
   const totalInterviews = applications.filter(app => app.status === 'Interview').length;
 
   const totalFollowUps = applications.filter(app => app.status === 'Applied').length;
 
+
+  const colorScheme = useColorScheme() ?? 'light';
+  const theme = Colors[colorScheme];
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}> 
       <ScrollView contentContainerStyle={styles.scrollContent}>
 
         {/* Main container */}
         <View style={styles.container}>
+
+          {/* Temparary SignIn text */}
+          <Text style={{textAlign: 'center', fontSize: 18, marginBottom: 8 }}>
+            {user? `${user.email}` :  'Not signed in'}
+          </Text>
+
+          {/* Profile Button */}
+          <Pressable onPress={() => router.push(user ? '/profile' : '/login')}>
+            <Ionicons
+              name={user ? 'person-circle' : 'person-circle-outline'}
+              size={24}
+              color={theme.text}
+              style={{ alignSelf: 'flex-end' }}
+            />
+          </Pressable>
+          
           {/* Title and Subtitle */}
           <Text style={styles.title} >Career Log</Text>
           <Text style={styles.subtitle}>Job Application Dashboard</Text>
