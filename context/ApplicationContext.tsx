@@ -5,6 +5,7 @@ import React, {
   useState,
 } from 'react';
 
+import { useAuth } from '@/context/AuthenticationContext';
 import {
   addDoc,
   collection,
@@ -13,6 +14,7 @@ import {
   query,
   serverTimestamp,
 } from 'firebase/firestore';
+
 
 import { db } from '@/services/firebase';
 import type { ApplicationStatus, JobApplication } from '@/types/JobApplication';
@@ -48,9 +50,18 @@ export function ApplicationsProvider({
 
   const [isLoading, setIsLoading] = useState(true);
 
+  const { user } = useAuth();
+
   useEffect(() => {
+    if (!user) {
+      setApplications([]);
+      setIsLoading(false);
+      return;
+    }
+
+
     // Reference to Firestore collection
-    const applicationsRef = collection(db, 'applications');
+    const applicationsRef = collection(db, 'users', user.uid, 'applications');
 
     // Query for applications in descending order of creation
     const applicationsQuery = query(
@@ -83,19 +94,23 @@ export function ApplicationsProvider({
 
     // Cleanup when component unmounts
     return unsubscribe;
-  }, []);
+  }, [user]);
 
   // Add new application to Firestore
   async function addApplication(application: NewJobApplication) {
-    await addDoc(collection(db, 'applications'), {
-      company: application.company,
-      position: application.position,
-      status: application.status,
-      location: application.location ?? '',
-      notes: application.notes ?? '',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    if (user) {
+      await addDoc(collection(db, 'users', user.uid, 'applications'), {
+        company: application.company,
+        position: application.position,
+        status: application.status,
+        location: application.location ?? '',
+        notes: application.notes ?? '',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      throw new Error('User must be authenticated to add applications.');
+    }
   }
 
   // Value provided to the rest of the app
