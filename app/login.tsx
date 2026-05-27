@@ -216,6 +216,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 34,

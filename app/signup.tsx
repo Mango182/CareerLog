@@ -151,7 +151,7 @@ export default function Signup() {
                     <Text style={styles.errorText}>{errors.password}</Text>
                   )}
 
-                  <TouchableOpacity onPress={() => router.push('/login')}>
+                  <TouchableOpacity onPress={() => router.push({ pathname: '/modal', params: { view: 'login' } })}>
                     <Text style={styles.forgotPassword}>Already have an account? Log In</Text>
                   </TouchableOpacity>
 
