@@ -3,9 +3,8 @@ import { browserLocalPersistence, getAuth, initializeAuth, inMemoryPersistence, 
 import {
   getFirestore,
   initializeFirestore,
-  memoryLocalCache,
   persistentLocalCache,
-  persistentMultipleTabManager,
+  persistentMultipleTabManager
 } from 'firebase/firestore';
 import { Platform } from 'react-native';
 
@@ -46,7 +45,7 @@ try {
       ? persistentLocalCache({
           tabManager: persistentMultipleTabManager(),
         })
-      : memoryLocalCache(),
+      : persistentLocalCache(),
 
     experimentalForceLongPolling: true,
   });
