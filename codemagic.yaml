@@ -86,6 +86,10 @@ workflows:
         script: |
           npx expo prebuild --platform ios --non-interactive
 
+      - name: Patch Podfile
+        script: |
+          echo "use_modular_headers!" | cat - ios/Podfile > temp && mv temp ios/Podfile
+
       - name: Show generated iOS files
         script: |
           echo "iOS folder contents:"
