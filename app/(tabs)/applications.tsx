@@ -1,10 +1,14 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import ApplicationCard from '@/components/ApplicationCard';
 import { Text, View } from '@/components/Themed';
-import { applications } from '@/data/applications';
+import { useApplications } from '@/context/ApplicationContext';
+import { router } from 'expo-router';
 
 export default function ApplicationsScreen() {
+  const { applications, isLoading } = useApplications();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -14,47 +18,15 @@ export default function ApplicationsScreen() {
             Track every job, internship, and follow-up in one place.
           </Text>
 
-          <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
-            <Text style={styles.addButtonText}>+ Add Application</Text>
-          </View>
+          <Pressable onPress={() => router.push('/add_application')}>
+            <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
+              <Text style={styles.addButtonText}>+ Add Application</Text>
+            </View>
+          </Pressable>
 
           <View style={styles.section}>
             {applications.map((application) => (
-              <View
-                key={application.id}
-                style={styles.applicationCard}
-                lightColor="#ffffff"
-                darkColor="#1e293b"
-              >
-                <View style={styles.cardHeader} lightColor="transparent" darkColor="transparent">
-                  <View lightColor="transparent" darkColor="transparent">
-                    <Text style={styles.companyName}>{application.company}</Text>
-                    <Text style={styles.positionTitle}>{application.position}</Text>
-                  </View>
-
-                  <View style={styles.statusBadge} lightColor="#dbeafe" darkColor="#1e3a8a">
-                    <Text style={styles.statusText}>{application.status}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.details} lightColor="transparent" darkColor="transparent">
-                  {application.location && (
-                    <Text style={styles.detailText}>Location: {application.location}</Text>
-                  )}
-
-                  {application.jobType && (
-                    <Text style={styles.detailText}>Type: {application.jobType}</Text>
-                  )}
-
-                  {application.workMode && (
-                    <Text style={styles.detailText}>Work Mode: {application.workMode}</Text>
-                  )}
-
-                  {application.dateApplied && (
-                    <Text style={styles.detailText}>Applied: {application.dateApplied}</Text>
-                  )}
-                </View>
-              </View>
+              <ApplicationCard key={application.id} application={application} />
             ))}
           </View>
         </View>

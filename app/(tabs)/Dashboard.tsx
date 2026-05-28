@@ -6,17 +6,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View } from '@/components/Themed';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
+import { useApplications } from '@/context/ApplicationContext';
 import { useAuth } from '@/context/AuthenticationContext';
-import { applications } from '@/data/applications';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
 
-  const totalApplications = applications.length;
+  const { applications, isLoading } = useApplications();
 
-  const totalInterviews = applications.filter(app => app.status === 'Interview').length;
+  const totalApplications = applications.length ?? 0;
 
-  const totalFollowUps = applications.filter(app => app.status === 'Applied').length;
+  const totalInterviews = applications.filter(app => app.status === 'Interview').length ?? 0;
+
+  const totalFollowUps = applications.filter(app => app.status === 'Applied').length ?? 0;
 
 
   const colorScheme = useColorScheme() ?? 'light';

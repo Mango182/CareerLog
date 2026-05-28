@@ -18,4 +18,6 @@ export type JobApplication = {
   jobType?: 'Internship' | 'Full-time' | 'Part-time' | 'Contract';
   workMode?: 'Remote' | 'Hybrid' | 'On-site';
   notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

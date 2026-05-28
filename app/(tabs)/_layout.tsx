@@ -27,7 +27,7 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="index"
+        name="Dashboard"
         options={{
           title: 'Dashboard',
           headerShown: false, // Hide the header for the Dashboard screen

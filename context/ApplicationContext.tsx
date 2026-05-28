@@ -82,6 +82,8 @@ export function ApplicationsProvider({
             status: data.status,
             location: data.location,
             notes: data.notes,
+            createdAt: data.createdAt ? data.createdAt.toDate() : null,
+            updatedAt: data.updatedAt ? data.updatedAt.toDate() : null,
           };
         }
       );
