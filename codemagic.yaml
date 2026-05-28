@@ -105,7 +105,7 @@ workflows:
           xcodebuild \
             -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
-            -configuration Debug \
+            -configuration Release \
             -destination "generic/platform=iOS" \
             CODE_SIGNING_ALLOWED=NO \
             build
@@ -114,7 +114,7 @@ workflows:
         script: |
           mkdir -p build/ios/ipa/Payload
 
-          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Debug-iphoneos/*.app" -type d | head -n 1)
+          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release-iphoneos/*.app" -type d | head -n 1)
 
           if [ -z "$APP_PATH" ]; then
             echo "No .app file found"
@@ -127,13 +127,13 @@ workflows:
 
           cd build/ios/ipa
 
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-AltStore-unsigned.ipa
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog.ipa
 
           echo "IPA file created:"
-          ls -lh CareerLog-AltStore-unsigned.ipa
+          ls -lh CareerLog.ipa
 
           echo "IPA contents:"
-          unzip -l CareerLog-AltStore-unsigned.ipa | head -50
+          unzip -l CareerLog.ipa | head -50
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -181,6 +181,10 @@ workflows:
         script: |
           npx expo prebuild --platform all --non-interactive
 
+      - name: Patch Podfile
+        script: |
+          echo "use_modular_headers!" | cat - ios/Podfile > temp && mv temp ios/Podfile
+
       - name: Show generated iOS files
         script: |
           echo "iOS folder contents:"
@@ -202,7 +206,7 @@ workflows:
           xcodebuild \
             -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
-            -configuration Debug \
+            -configuration Release \
             -destination "generic/platform=iOS" \
             CODE_SIGNING_ALLOWED=NO \
             build
@@ -211,7 +215,7 @@ workflows:
         script: |
           mkdir -p build/ios/ipa/Payload
 
-          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Debug-iphoneos/*.app" -type d | head -n 1)
+          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release-iphoneos/*.app" -type d | head -n 1)
 
           if [ -z "$APP_PATH" ]; then
             echo "No .app file found"
@@ -224,13 +228,13 @@ workflows:
 
           cd build/ios/ipa
 
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-AltStore-unsigned.ipa
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog.ipa
 
           echo "IPA file created:"
-          ls -lh CareerLog-AltStore-unsigned.ipa
+          ls -lh CareerLog.ipa
 
           echo "IPA contents:"
-          unzip -l CareerLog-AltStore-unsigned.ipa | head -50
+          unzip -l CareerLog.ipa | head -50
 
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
