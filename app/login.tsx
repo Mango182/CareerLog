@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import * as Yup from 'yup';
@@ -70,9 +70,12 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            onScrollBeginDrag={Platform.OS !== 'web' ? Keyboard.dismiss : undefined}
+          >
             {/* Title and subtitle for Login Screen */}
             <Text style={styles.title}>Career Log</Text>
             <Text style={styles.subtitle}>Log in to continue tracking applications.</Text>
@@ -200,7 +203,6 @@ export default function LoginScreen() {
             </Formik>
           </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
