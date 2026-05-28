@@ -1,8 +1,10 @@
+import Constants from 'expo-constants';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { browserLocalPersistence, getAuth, initializeAuth, inMemoryPersistence, } from 'firebase/auth';
 import {
   getFirestore,
   initializeFirestore,
+  memoryLocalCache,
   persistentLocalCache,
   persistentMultipleTabManager
 } from 'firebase/firestore';
@@ -35,16 +37,18 @@ try {
 }
 export const auth = firebaseAuth;
 
+const isExpoGo = Constants.appOwnership === 'expo';
 const isBrowser = Platform.OS === 'web' && typeof window !== 'undefined';
+const hasIndexedDB = isBrowser && typeof indexedDB !== 'undefined';
 
 let firestoreDb;
 
 try {
   firestoreDb = initializeFirestore(app, {
-    localCache: isBrowser
-      ? persistentLocalCache({
-          tabManager: persistentMultipleTabManager(),
-        })
+    localCache: hasIndexedDB
+      ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      : isExpoGo || Platform.OS === 'web'
+      ? memoryLocalCache()
       : persistentLocalCache(),
 
     experimentalForceLongPolling: true,

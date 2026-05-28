@@ -8,6 +8,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { useApplications } from '@/context/ApplicationContext';
 import { APPLICATION_STATUSES, ApplicationStatus } from '@/types/JobApplication';
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-toast-message';
@@ -70,6 +71,8 @@ export default function AddApplicationScreen() {
 
       // Clear form after saving
       clearForm();
+
+      router.replace('/(tabs)');
     } catch (error) {
       // Log error and show error toast
       console.error('Error saving application:', error);
