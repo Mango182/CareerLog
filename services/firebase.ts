@@ -1,12 +1,14 @@
-import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { getApp, getApps, initializeApp } from 'firebase/app';
-import { browserLocalPersistence, getAuth, initializeAuth, inMemoryPersistence, } from 'firebase/auth';
+// @ts-ignore: getReactNativePersistence exists in the RN bundle 
+import { browserLocalPersistence, getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import {
   getFirestore,
   initializeFirestore,
   memoryLocalCache,
   persistentLocalCache,
-  persistentMultipleTabManager
+  persistentMultipleTabManager,
 } from 'firebase/firestore';
 import { Platform } from 'react-native';
 
@@ -30,30 +32,53 @@ try {
     persistence:
       Platform.OS === 'web'
         ? browserLocalPersistence
-        : inMemoryPersistence,
+        : getReactNativePersistence(AsyncStorage),
   });
 } catch {
   firebaseAuth = getAuth(app);
 }
 export const auth = firebaseAuth;
 
-const isExpoGo = Constants.appOwnership === 'expo';
-const isBrowser = Platform.OS === 'web' && typeof window !== 'undefined';
-const hasIndexedDB = isBrowser && typeof indexedDB !== 'undefined';
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+const hasIndexedDB = (() => {
+  try {
+    return (
+      Platform.OS === 'web' &&
+      typeof window !== 'undefined' &&
+      typeof indexedDB !== 'undefined' &&
+      indexedDB !== null
+    );
+  } catch {
+    return false;
+  }
+})();
 
 let firestoreDb;
 
+const getLocalCache = () => {
+  if (isExpoGo) return memoryLocalCache();
+  
+  if (Platform.OS === 'web') {
+    return hasIndexedDB
+      ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      : memoryLocalCache();
+  }
+
+  // Native - try persistent, fall back to memory silently
+  try {
+    return persistentLocalCache();
+  } catch {
+    return memoryLocalCache();
+  }
+};
+
 try {
   firestoreDb = initializeFirestore(app, {
-    localCache: hasIndexedDB
-      ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-      : isExpoGo || Platform.OS === 'web'
-      ? memoryLocalCache()
-      : persistentLocalCache(),
-
+    localCache: getLocalCache(),
     experimentalForceLongPolling: true,
   });
 } catch {
   firestoreDb = getFirestore(app);
 }
+
 export const db = firestoreDb;
