@@ -1,6 +1,7 @@
 import EditLinksModal from '@/components/EditLinksModal';
 import ResumePreview from '@/components/ResumePreview';
 import { Text, View } from '@/components/Themed';
+import { useTheme } from '@/constants/useThemes';
 import { useAuth } from '@/context/AuthenticationContext';
 import { db } from '@/services/firebase';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +9,7 @@ import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -76,7 +77,8 @@ export default function Profile() {
   const githubPressed = () => {
     if (links.github) {
       openLink(links.github);
-    } else {      Toast.show({
+    } else {      
+      Toast.show({
         type: 'error',
         text1: 'No Github URL',
         text2: 'Please add your Github URL in the edit links section.',
@@ -103,13 +105,15 @@ export default function Profile() {
     router.replace('/login');
   };
 
+    const { colors } = useTheme();
+
   return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
         <View style={styles.container}>
           <View style={styles.profile}>
-            <Ionicons name="person-circle" size={100} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
-            <Text style={styles.nameLabel}>{user?.email}</Text>
-            <Text style={styles.userName}>{user?.email}</Text>
+            <Ionicons name="person-circle" size={100} color={colors.iconColor} />
+            <Text style={styles.displayNameLabel}>{user?.email}</Text>
+            <Text style={styles.emailLabel}>{user?.email}</Text>
 
             {/* Connection Icons */}
             <View style={styles.connectionRow}>
@@ -121,17 +125,17 @@ export default function Profile() {
 
               {/* Github */}
               <Pressable onPress={githubPressed}>
-                <Ionicons name="logo-github" size={32} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
+                <Ionicons name="logo-github" size={32} color={colors.iconColor} />
               </Pressable>
 
               {/* Email */}
               <Pressable onPress={emailPressed}>
-                <Ionicons name="mail" size={32} color={useColorScheme() === 'dark' ? '#fff' : '#000'} />
+                <Ionicons name="mail" size={32} color={colors.iconColor} />
               </Pressable>
 
               {/* Edit Links */}
               <Pressable onPress={() => setEditing(true)} style={{ marginTop: 12 }}>
-                <Ionicons name="pencil-outline" size={20} color="gray" />
+                <Ionicons name="pencil-outline" size={20} color={colors.iconColor} />
               </Pressable>
             </View>
 
@@ -148,12 +152,6 @@ export default function Profile() {
 
             {/* Resume Preview */}
             <View style={styles.resumePreview}>
-              <Text style={{ marginTop: 24, fontSize: 16, color: 'gray' }}>
-                placeholder for Resume Preview
-              </Text>
-
-              {/* Resume Preview */}
-              {/* This is more of a placeholder as the planned one will show a preview within the page */}
               <ResumePreview />
             </View>
           </View>
@@ -181,18 +179,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  nameLabel: {
+  displayNameLabel: {
     fontSize: 24,
     fontWeight: 'bold',
   },
-  userName: {
+  emailLabel: {
     fontSize: 18,
     marginTop: 8,
     color: 'gray',
-  },
-  userEmail: {
-    fontSize: 16,
-    marginTop: 4,
   },
   connectionRow: {
     flexDirection: 'row',

@@ -8,8 +8,7 @@ import Toast from 'react-native-toast-message';
 import * as Yup from 'yup';
 
 import { Text, View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
+import { useTheme } from '@/constants/useThemes';
 import { useAuth } from '@/context/AuthenticationContext';
 
 // Schema for Login Credentials
@@ -25,14 +24,8 @@ const loginValidationSchema = Yup.object().shape({
 export default function LoginScreen() {
   const { login, signInWithGoogle } = useAuth();
 
-  const colorScheme = useColorScheme() ?? 'light';
-  const theme = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
-
-  const inputBackground = isDark ? '#1e293b' : '#f1f5f9';
-  const inputBorder = isDark ? '#334155' : '#d1d5db';
-  const placeholderColor = isDark ? '#94a3b8' : '#6b7280';
-
+  const { colors, isDark } = useTheme();
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submit(values: { email: string; password: string }) {
@@ -102,22 +95,22 @@ export default function LoginScreen() {
                     style={[
                       styles.inputContainer,
                       {
-                        backgroundColor: inputBackground,
-                        borderColor: inputBorder,
+                        backgroundColor: colors.input,
+                        borderColor: colors.border,
                       },
                     ]}
                   >
                     <Ionicons
                       name="mail-outline"
                       size={22}
-                      color={theme.text}
+                      color={colors.text}
                       style={styles.icon}
                     />
 
                     <TextInput
-                      style={[styles.input, { color: theme.text }]}
+                      style={[styles.input, { color: colors.text }]}
                       placeholder="Email"
-                      placeholderTextColor={placeholderColor}
+                      placeholderTextColor={colors.placeholder}
                       keyboardType="email-address"
                       autoCapitalize="none"
                       autoCorrect={false}
@@ -136,22 +129,22 @@ export default function LoginScreen() {
                     style={[
                       styles.inputContainer,
                       {
-                        backgroundColor: inputBackground,
-                        borderColor: inputBorder,
+                        backgroundColor: colors.input,
+                        borderColor: colors.border,
                       },
                     ]}
                   >
                     <Ionicons
                       name="lock-closed-outline"
                       size={22}
-                      color={theme.text}
+                      color={colors.text}
                       style={styles.icon}
                     />
 
                     <TextInput
-                      style={[styles.input, { color: theme.text }]}
+                      style={[styles.input, { color: colors.text }]}
                       placeholder="Password"
-                      placeholderTextColor={placeholderColor}
+                      placeholderTextColor={colors.placeholder}
                       secureTextEntry
                       autoCapitalize="none"
                       onChangeText={handleChange('password')}

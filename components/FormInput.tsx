@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import {
-    StyleSheet,
-    TextInput,
-    TextInputProps,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
 } from 'react-native';
 
 import { View } from '@/components/Themed';

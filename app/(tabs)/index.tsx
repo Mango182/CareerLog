@@ -4,8 +4,7 @@ import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Text, View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
+import { useTheme } from '@/constants/useThemes';
 import { useApplications } from '@/context/ApplicationContext';
 import { useAuth } from '@/context/AuthenticationContext';
 
@@ -20,9 +19,8 @@ export default function DashboardScreen() {
 
   const totalFollowUps = applications.filter(app => app.status === 'Applied').length ?? 0;
 
+  const {colors} = useTheme();
 
-  const colorScheme = useColorScheme() ?? 'light';
-  const theme = Colors[colorScheme];
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}> 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -40,7 +38,7 @@ export default function DashboardScreen() {
             <Ionicons
               name={user ? 'person-circle' : 'person-circle-outline'}
               size={24}
-              color={theme.text}
+              color={colors.iconColor}
               style={{ alignSelf: 'flex-end' }}
             />
           </Pressable>
@@ -52,7 +50,7 @@ export default function DashboardScreen() {
           {/* Stats Cards Container */}
           <View style={styles.statsContainer}>
             {/* Applications Card */}
-            <View style={styles.card} lightColor="#ebe8e8" darkColor="#1e293b">
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
                 <Text style={styles.cardNumber}>{totalApplications}</Text>
                 <Text style={styles.cardLabel}>Applications</Text>
                 <Text style={styles.cardSubtitle}>
@@ -62,19 +60,19 @@ export default function DashboardScreen() {
 
             {/* Add Application Button */}
             <Pressable onPress={() => router.push('/add_application')}>
-              <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
-                <Text style={styles.addButtonText}>Add Application</Text>
+              <View style={styles.addButton}>
+                <Text style={[styles.addButtonText]}>Add Application</Text>
               </View>
             </Pressable>
                 
             {/* Interviews Card */}
-            <View style={styles.card} lightColor="#ebe8e8" darkColor="#1e293b">
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
               <Text style={styles.cardNumber}>{totalInterviews}</Text>
               <Text style={styles.cardLabel}>Interviews</Text>
             </View>
 
             {/* Follow-ups Card */}
-            <View style={styles.card} lightColor="#ebe8e8" darkColor="#1e293b">
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
               <Text style={styles.cardNumber}>{totalFollowUps}</Text>
               <Text style={styles.cardLabel}>Follow-ups</Text>
             </View>
@@ -83,7 +81,7 @@ export default function DashboardScreen() {
           {/* Recent Activity section (and card) */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Recent Activity</Text>
-            <View style={styles.emptyCard} lightColor="#ffffff" darkColor="#1e293b">
+            <View style={[styles.emptyCard, { backgroundColor: colors.card }]}>
               <Text style={styles.emptyText}>
                 No recent activity yet. Once you start adding applications, updates
                 will appear here.
@@ -97,9 +95,7 @@ export default function DashboardScreen() {
             {applications.map((application) => (
               <View
                 key={application.id}
-                style={styles.applicationCard}
-                lightColor="#ffffff"
-                darkColor="#1e293b"
+                style={[styles.applicationCard, { backgroundColor: colors.card }]}
               >
                 <Text style={styles.companyName}>{application.company}</Text>
                 <Text style={styles.positionTitle}>{application.position}</Text>
@@ -139,10 +135,12 @@ const styles = StyleSheet.create({
 
   // Styling for the Add Application Button
   addButton: {
+    backgroundColor: '#2563eb',
     padding: 12,
     borderRadius: 8,
   },
   addButtonText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',

@@ -19,8 +19,8 @@ export default function ApplicationsScreen() {
           </Text>
 
           <Pressable onPress={() => router.push('/add_application')}>
-            <View style={styles.addButton} lightColor="#2563eb" darkColor="#3b82f6">
-              <Text style={styles.addButtonText}>+ Add Application</Text>
+            <View style={styles.addButton}>
+              <Text style={styles.addButtonText}>Add Application</Text>
             </View>
           </Pressable>
 
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
 
   // Add button styles
   addButton: {
+    backgroundColor: '#2563eb',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

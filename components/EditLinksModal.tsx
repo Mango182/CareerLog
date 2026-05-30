@@ -1,4 +1,5 @@
 import { Text } from '@/components/Themed';
+import { useTheme } from '@/constants/useThemes';
 import { Modal, Pressable, StyleSheet, TextInput } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -17,6 +18,8 @@ type Props = {
 };
 
 export default function EditLinksModal({ visible, links, onClose, onSave, onChange }: Props) {
+  const { colors } = useTheme()
+
   const saveAndClose = () => {
     onSave();
     onClose();
@@ -37,12 +40,12 @@ export default function EditLinksModal({ visible, links, onClose, onSave, onChan
       onRequestClose={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.modal}>
-          <Text style={styles.title}>Edit Links</Text>
+        <Pressable style={[styles.modal, {backgroundColor: colors.background}]}>
+          <Text style={[styles.title, {color: colors.text}]}>Edit Links</Text>
 
           {/* LinkedIn Input */}
           <TextInput
-            style={styles.input}
+            style={[styles.input, {borderColor: colors.border, color: colors.text}]}
             placeholder="LinkedIn URL"
             value={links.linkedin}
             onChangeText={(val) => onChange({ ...links, linkedin: val })}
@@ -51,7 +54,7 @@ export default function EditLinksModal({ visible, links, onClose, onSave, onChan
 
           {/* GitHub Input */}
           <TextInput
-            style={styles.input}
+            style={[styles.input, {borderColor: colors.border, color: colors.text}]}
             placeholder="GitHub URL"
             value={links.github}
             onChangeText={(val) => onChange({ ...links, github: val })}
@@ -60,7 +63,7 @@ export default function EditLinksModal({ visible, links, onClose, onSave, onChan
 
           {/* Email Input */}
           <TextInput
-            style={styles.input}
+            style={[styles.input, {borderColor: colors.border, color: colors.text}]}
             placeholder="Email"
             value={links.email}
             onChangeText={(val) => onChange({ ...links, email: val })}
@@ -69,7 +72,7 @@ export default function EditLinksModal({ visible, links, onClose, onSave, onChan
           />
 
           {/* Save Button */}
-          <Pressable style={styles.saveButton} onPress={saveAndClose}>
+          <Pressable style={[styles.saveButton, {backgroundColor: colors.primary}]} onPress={saveAndClose}>
             <Text style={styles.saveButtonText}>Save</Text>
           </Pressable>
 
@@ -92,7 +95,6 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: '85%',
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 24,
     gap: 12,
@@ -101,18 +103,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#000',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
-    color: '#000',
   },
   saveButton: {
-    backgroundColor: '#2563eb',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

@@ -1,15 +1,15 @@
 import { Text, View } from '@/components/Themed';
+import { useTheme } from '@/constants/useThemes';
 import { JobApplication } from '@/types/JobApplication';
 import { StyleSheet } from 'react-native';
 
 export default function ApplicationCard({ application }: { application: JobApplication }) {
+  const { colors } = useTheme();
   return (
     <View style={styles.section}>
       <View
         key={application.id}
-        style={styles.applicationCard}
-        lightColor="#ffffff"
-        darkColor="#1e293b"
+        style={[styles.applicationCard, { backgroundColor: colors.card }]}
       >
         <View style={styles.cardHeader} lightColor="transparent" darkColor="transparent">
           <View lightColor="transparent" darkColor="transparent">
@@ -17,7 +17,7 @@ export default function ApplicationCard({ application }: { application: JobAppli
             <Text style={styles.positionTitle}>{application.position}</Text>
           </View>
 
-          <View style={styles.statusBadge} lightColor="#dbeafe" darkColor="#1e3a8a">
+          <View style={[styles.statusBadge, { backgroundColor: colors.status }]} lightColor="transparent" darkColor="transparent">
             <Text style={styles.statusText}>{application.status}</Text>
           </View>
         </View>

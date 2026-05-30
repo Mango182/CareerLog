@@ -1,7 +1,7 @@
-import Colors from '@/constants/Colors';
 import React from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { StyleSheet } from 'react-native';
 
+import { useTheme } from '@/constants/useThemes';
 import { Dropdown } from 'react-native-element-dropdown';
 
 type DropdownOption<T extends string> = {
@@ -22,38 +22,35 @@ export default function CustomDropdown<T extends string> ({
     placeholder = 'Select an option',
     onChange,
 }: CustomDropdownProps<T>) {
-    const colorScheme = useColorScheme() ?? 'light';
-    const theme = Colors[colorScheme];
-
-    const isDark = colorScheme === 'dark';
+    const { colors } = useTheme();
     return (
       <Dropdown
         style={[
           styles.dropdown, 
-          { backgroundColor: theme.background },
+          { backgroundColor: colors.background, borderColor: colors.border },
         ]}
-        containerStyle={{ backgroundColor: theme.background }}
-        itemContainerStyle={{ backgroundColor: theme.background }}
-        itemTextStyle={{ color: theme.text }}
+        containerStyle={{ backgroundColor: colors.background }}
+        itemContainerStyle={{ backgroundColor: colors.background }}
+        itemTextStyle={{ color: colors.text }}
         placeholderStyle={[
           styles.placeholderStyle,
           { 
-            backgroundColor: theme.background,
-            color: theme.text
+            backgroundColor: colors.background,
+            color: colors.text
           },
         ]}
         selectedTextStyle={[
           styles.selectedTextStyle,
-          { color: theme.text },
+          { color: colors.text },
         ]}
         inputSearchStyle={[
           styles.inputSearchStyle,
           { 
-            color: theme.text,
-            backgroundColor: theme.background
+            color: colors.text,
+            backgroundColor: colors.background
           },
         ]}
-        activeColor={ theme.background }
+        activeColor={ colors.background }
         data={options}
         maxHeight={250}
         labelField="label"
@@ -72,31 +69,32 @@ const styles = StyleSheet.create({
   container: {
   },
   label: {
-      fontSize: 14,
-      marginBottom: 8,
+    fontSize: 14,
+    marginBottom: 8,
   },
   dropdown: {
-      height: 50,
-      borderBottomColor: 'gray',
-      borderBottomWidth: 0.5,
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
   },
   imageStyle: {
-      width: 24,
-      height: 24,
+    width: 24,
+    height: 24,
   },
   placeholderStyle: {
-      fontSize: 16,
+    fontSize: 16,
   },
   selectedTextStyle: {
-      fontSize: 16,
-      marginLeft: 8,
+    fontSize: 16,
+    marginLeft: 8,
   },
   iconStyle: {
-      width: 20,
-      height: 20,
+    width: 20,
+    height: 20,
   },
   inputSearchStyle: {
-      height: 40,
-      fontSize: 16,
+    height: 40,
+    fontSize: 16,
   },
 });

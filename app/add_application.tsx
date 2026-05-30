@@ -4,8 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomDropdown from '@/components/CustomDropdown';
 import FormInput from '@/components/FormInput';
 import { Text, View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
+import { useTheme } from '@/constants/useThemes';
 import { useApplications } from '@/context/ApplicationContext';
 import { APPLICATION_STATUSES, ApplicationStatus } from '@/types/JobApplication';
 import { router } from 'expo-router';
@@ -14,10 +13,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Toast from 'react-native-toast-message';
 
 export default function AddApplicationScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const theme = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
-
   // Get addApplication function from the ApplicationContext
   const { addApplication } = useApplications();
   
@@ -84,6 +79,8 @@ export default function AddApplicationScreen() {
     }
   }
 
+  const {colors} = useTheme();
+
   // Clears the form fields after successful save
   function clearForm() {
     setCompany('');
@@ -94,7 +91,7 @@ export default function AddApplicationScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
       <KeyboardAwareScrollView 
         style={styles.keyboardScrollView}
         contentContainerStyle={styles.scrollContent}
@@ -172,7 +169,7 @@ export default function AddApplicationScreen() {
         </View>
 
         {/* Save Button */}
-        <Pressable style={styles.saveButton} onPress={handleSave}>
+        <Pressable style={[styles.saveButton, {backgroundColor: colors.primary}]} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save Application</Text>
         </Pressable>
       </KeyboardAwareScrollView>
@@ -208,7 +205,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
-
   // Form styles
   formGroup: {
     marginBottom: 16,
@@ -217,17 +213,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-
   // Save button styles
   saveButton: {
-    backgroundColor: '#007AFF',
     padding: 12,
     borderRadius: 8,
     marginTop: 24,
