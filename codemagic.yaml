@@ -1,17 +1,15 @@
 workflows:
-  careerlog-android-build:
-    name: CareerLog Android APK Build
+  careerlog-android-dev:
+    name: CareerLog Android Dev Build
     max_build_duration: 45
     instance_type: mac_mini_m2
+    working_directory: CareerLog
 
     triggering:
       events:
         - push
       branch_patterns:
-        - pattern: main
-          include: true
-          source: true
-        - pattern: master
+        - pattern: develop
           include: true
           source: true
         - pattern: "feature/*"
@@ -41,14 +39,30 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Configure git
+        script: |
+          git config --global user.email "codemagic-bot@careerlog.com"
+          git config --global user.name "Codemagic Bot"
+          git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
+
+      - name: Push APK to GitHub
+        script: |
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          mkdir -p runnables
+          cp android/app/build/outputs/apk/debug/app-debug.apk runnables/CareerLog-dev.apk
+          git add runnables/CareerLog-dev.apk
+          git commit -m "ci: add Android dev APK [skip ci]"
+          git push origin "$BRANCH_NAME"
+
     artifacts:
-      - android/app/build/outputs/apk/debug/*.apk
+      - CareerLog/android/app/build/outputs/apk/debug/*.apk
 
 
-  careerlog-ios-altstore-build:
-    name: CareerLog iOS AltStore IPA Build
+  careerlog-android-release:
+    name: CareerLog Android Release Build
     max_build_duration: 45
     instance_type: mac_mini_m2
+    working_directory: CareerLog
 
     triggering:
       events:
@@ -58,6 +72,62 @@ workflows:
           include: true
           source: true
         - pattern: master
+          include: true
+          source: true
+
+    environment:
+      node: 20
+      java: 17
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm ci
+
+      - name: Check TypeScript
+        script: |
+          npx tsc --noEmit
+
+      - name: Generate Android project
+        script: |
+          npx expo prebuild --platform android --non-interactive --clean
+
+      - name: Build Android release APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Configure git
+        script: |
+          git config --global user.email "codemagic-bot@careerlog.com"
+          git config --global user.name "Codemagic Bot"
+          git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
+
+      - name: Push APK to GitHub
+        script: |
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          mkdir -p runnables
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk runnables/CareerLog-release.apk
+          git add runnables/CareerLog-release.apk
+          git commit -m "ci: add Android release APK [skip ci]"
+          git push origin "$BRANCH_NAME"
+
+    artifacts:
+      - CareerLog/android/app/build/outputs/apk/release/*.apk
+
+
+  careerlog-ios-dev:
+    name: CareerLog iOS Dev AltStore IPA Build
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+    working_directory: CareerLog
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: develop
           include: true
           source: true
         - pattern: "feature/*"
@@ -91,7 +161,105 @@ workflows:
         script: |
           cd ios && pod install
 
-      - name: Build unsigned iOS app
+      - name: Build unsigned iOS dev app
+        script: |
+          xcodebuild \
+            -workspace "ios/$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Debug \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$CM_BUILD_DIR/derivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package as AltStore IPA
+        script: |
+          APP_PATH=$(find "$CM_BUILD_DIR/derivedData" \
+            -path "*/Build/Products/Debug-iphoneos/$XCODE_SCHEME.app" \
+            -type d | head -n 1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: .app not found. Searching all .app files:"
+            find "$CM_BUILD_DIR/derivedData" -name "*.app" -type d
+            exit 1
+          fi
+
+          echo "Found .app at: $APP_PATH"
+
+          mkdir -p "$CM_BUILD_DIR/ipa/Payload"
+          cp -R "$APP_PATH" "$CM_BUILD_DIR/ipa/Payload/$XCODE_SCHEME.app"
+
+          cd "$CM_BUILD_DIR/ipa"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-dev.ipa
+
+          echo "IPA created:"
+          ls -lh CareerLog-dev.ipa
+
+      - name: Configure git
+        script: |
+          git config --global user.email "codemagic-bot@careerlog.com"
+          git config --global user.name "Codemagic Bot"
+          git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
+
+      - name: Push IPA to GitHub
+        script: |
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          mkdir -p runnables
+          cp "$CM_BUILD_DIR/ipa/CareerLog-dev.ipa" runnables/CareerLog-dev.ipa
+          git add runnables/CareerLog-dev.ipa
+          git commit -m "ci: add iOS dev IPA [skip ci]"
+          git push origin "$BRANCH_NAME"
+
+    artifacts:
+      - $CM_BUILD_DIR/ipa/*.ipa
+
+
+  careerlog-ios-release:
+    name: CareerLog iOS Release AltStore IPA Build
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+    working_directory: CareerLog
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+        - pattern: master
+          include: true
+          source: true
+
+    environment:
+      node: 20
+      xcode: latest
+      cocoapods: default
+
+      vars:
+        XCODE_SCHEME: CareerLog
+        XCODE_WORKSPACE: CareerLog.xcworkspace
+        BUNDLE_ID: com.mango1823192.CareerLog
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm ci
+
+      - name: Check TypeScript
+        script: |
+          npx tsc --noEmit
+
+      - name: Generate iOS project
+        script: |
+          npx expo prebuild --platform ios --non-interactive --clean
+
+      - name: Install iOS pods
+        script: |
+          cd ios && pod install
+
+      - name: Build unsigned iOS release app
         script: |
           xcodebuild \
             -workspace "ios/$XCODE_WORKSPACE" \
@@ -121,10 +289,10 @@ workflows:
           cp -R "$APP_PATH" "$CM_BUILD_DIR/ipa/Payload/$XCODE_SCHEME.app"
 
           cd "$CM_BUILD_DIR/ipa"
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog.ipa
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog-release.ipa
 
           echo "IPA created:"
-          ls -lh CareerLog.ipa
+          ls -lh CareerLog-release.ipa
 
       - name: Configure git
         script: |
@@ -135,12 +303,10 @@ workflows:
       - name: Push IPA to GitHub
         script: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-
           mkdir -p runnables
-          cp "$CM_BUILD_DIR/ipa/CareerLog.ipa" runnables/CareerLog.ipa
-
-          git add runnables/CareerLog.ipa
-          git commit -m "ci: add iOS IPA build artifact [skip ci]"
+          cp "$CM_BUILD_DIR/ipa/CareerLog-release.ipa" runnables/CareerLog-release.ipa
+          git add runnables/CareerLog-release.ipa
+          git commit -m "ci: add iOS release IPA [skip ci]"
           git push origin "$BRANCH_NAME"
 
     artifacts:
