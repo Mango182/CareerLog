@@ -49,9 +49,10 @@ workflows:
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          mkdir -p runnables
-          cp android/app/build/outputs/apk/debug/app-debug.apk runnables/CareerLog-dev.apk
-          git add runnables/CareerLog-dev.apk
+          cd "$CM_BUILD_DIR"
+          mkdir -p Runnables
+          cp "$CM_BUILD_DIR/CareerLog/android/app/build/outputs/apk/debug/app-debug.apk" Runnables/CareerLog-dev.apk
+          git add Runnables/CareerLog-dev.apk
           git commit -m "ci: add Android dev APK [skip ci]"
           git push origin "$BRANCH_NAME"
 
@@ -109,9 +110,10 @@ workflows:
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          mkdir -p runnables
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk runnables/CareerLog-release.apk
-          git add runnables/CareerLog-release.apk
+          cd "$CM_BUILD_DIR"
+          mkdir -p Runnables
+          cp "$CM_BUILD_DIR/CareerLog/android/app/build/outputs/apk/release/app-release-unsigned.apk" Runnables/CareerLog-release.apk
+          git add Runnables/CareerLog-release.apk
           git commit -m "ci: add Android release APK [skip ci]"
           git push origin "$BRANCH_NAME"
 
@@ -205,9 +207,10 @@ workflows:
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          mkdir -p runnables
-          cp "$CM_BUILD_DIR/ipa/CareerLog-dev.ipa" runnables/CareerLog-dev.ipa
-          git add runnables/CareerLog-dev.ipa
+          cd "$CM_BUILD_DIR"
+          mkdir -p Runnables
+          cp "$CM_BUILD_DIR/ipa/CareerLog-dev.ipa" Runnables/CareerLog-dev.ipa
+          git add Runnables/CareerLog-dev.ipa
           git commit -m "ci: add iOS dev IPA [skip ci]"
           git push origin "$BRANCH_NAME"
 
@@ -301,9 +304,10 @@ workflows:
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          mkdir -p runnables
-          cp "$CM_BUILD_DIR/ipa/CareerLog-release.ipa" runnables/CareerLog-release.ipa
-          git add runnables/CareerLog-release.ipa
+          cd "$CM_BUILD_DIR"
+          mkdir -p Runnables
+          cp "$CM_BUILD_DIR/ipa/CareerLog-release.ipa" Runnables/CareerLog-release.ipa
+          git add Runnables/CareerLog-release.ipa
           git commit -m "ci: add iOS release IPA [skip ci]"
           git push origin "$BRANCH_NAME"
 
