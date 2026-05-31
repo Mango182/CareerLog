@@ -19,6 +19,10 @@ workflows:
     environment:
       node: 20
       java: 17
+      groups:
+        - github_credentials
+      vars:
+        APP_ENV: development
 
     scripts:
       - name: Install dependencies
@@ -39,14 +43,11 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Configure git
+      - name: Push APK to GitHub
         script: |
           git config --global user.email "codemagic-bot@careerlog.com"
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
-
-      - name: Push APK to GitHub
-        script: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           mkdir -p runnables
           cp android/app/build/outputs/apk/debug/app-debug.apk runnables/CareerLog-dev.apk
@@ -78,6 +79,10 @@ workflows:
     environment:
       node: 20
       java: 17
+      groups:
+        - github_credentials
+      vars:
+        APP_ENV: production
 
     scripts:
       - name: Install dependencies
@@ -98,14 +103,11 @@ workflows:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Configure git
+      - name: Push APK to GitHub
         script: |
           git config --global user.email "codemagic-bot@careerlog.com"
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
-
-      - name: Push APK to GitHub
-        script: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           mkdir -p runnables
           cp android/app/build/outputs/apk/release/app-release-unsigned.apk runnables/CareerLog-release.apk
@@ -138,11 +140,12 @@ workflows:
       node: 20
       xcode: latest
       cocoapods: default
-
+      groups:
+        - github_credentials
       vars:
+        APP_ENV: development
         XCODE_SCHEME: CareerLog
         XCODE_WORKSPACE: CareerLog.xcworkspace
-        BUNDLE_ID: com.mango1823192.CareerLog
 
     scripts:
       - name: Install dependencies
@@ -196,14 +199,11 @@ workflows:
           echo "IPA created:"
           ls -lh CareerLog-dev.ipa
 
-      - name: Configure git
+      - name: Push IPA to GitHub
         script: |
           git config --global user.email "codemagic-bot@careerlog.com"
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
-
-      - name: Push IPA to GitHub
-        script: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           mkdir -p runnables
           cp "$CM_BUILD_DIR/ipa/CareerLog-dev.ipa" runnables/CareerLog-dev.ipa
@@ -236,11 +236,12 @@ workflows:
       node: 20
       xcode: latest
       cocoapods: default
-
+      groups:
+        - github_credentials
       vars:
+        APP_ENV: production
         XCODE_SCHEME: CareerLog
         XCODE_WORKSPACE: CareerLog.xcworkspace
-        BUNDLE_ID: com.mango1823192.CareerLog
 
     scripts:
       - name: Install dependencies
@@ -294,14 +295,11 @@ workflows:
           echo "IPA created:"
           ls -lh CareerLog-release.ipa
 
-      - name: Configure git
+      - name: Push IPA to GitHub
         script: |
           git config --global user.email "codemagic-bot@careerlog.com"
           git config --global user.name "Codemagic Bot"
           git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
-
-      - name: Push IPA to GitHub
-        script: |
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           mkdir -p runnables
           cp "$CM_BUILD_DIR/ipa/CareerLog-release.ipa" runnables/CareerLog-release.ipa
