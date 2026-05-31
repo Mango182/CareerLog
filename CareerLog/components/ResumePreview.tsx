@@ -51,7 +51,7 @@ export default function ResumePreview() {
   return (
     <View style={styles.container}>
       <Pressable style={[styles.resumeCard, { borderColor: colors.border }]} onPress={openResume}>
-        <Ionicons name="document-text-outline" size={48} />
+        <Ionicons style={{color: colors.text}} name="document-text-outline" size={48} />
         <Text style={styles.label}>View Resume</Text>
       </Pressable>
       <Pressable onPress={() => { setInput(resumeUrl); setEditing(true); }}>

@@ -27,15 +27,15 @@ export default function CustomDropdown<T extends string> ({
       <Dropdown
         style={[
           styles.dropdown, 
-          { backgroundColor: colors.background, borderColor: colors.border },
+          { backgroundColor: colors.card, borderColor: colors.border },
         ]}
-        containerStyle={{ backgroundColor: colors.background }}
-        itemContainerStyle={{ backgroundColor: colors.background }}
+        containerStyle={{ backgroundColor: colors.card }}
+        itemContainerStyle={{ backgroundColor: colors.card }}
         itemTextStyle={{ color: colors.text }}
         placeholderStyle={[
           styles.placeholderStyle,
           { 
-            backgroundColor: colors.background,
+            backgroundColor: colors.card,
             color: colors.text
           },
         ]}
@@ -47,7 +47,7 @@ export default function CustomDropdown<T extends string> ({
           styles.inputSearchStyle,
           { 
             color: colors.text,
-            backgroundColor: colors.background
+            backgroundColor: colors.card
           },
         ]}
         activeColor={ colors.background }

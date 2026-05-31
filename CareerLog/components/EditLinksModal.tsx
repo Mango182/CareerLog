@@ -34,6 +34,7 @@ export default function EditLinksModal({ visible, links, onClose, onSave, onChan
 
   return (
     <Modal
+      style={{backgroundColor: colors.background}}
       visible={visible}
       transparent
       animationType="fade"

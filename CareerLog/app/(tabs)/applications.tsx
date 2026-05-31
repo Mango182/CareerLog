@@ -5,10 +5,11 @@ import ApplicationCard from '@/components/ApplicationCard';
 import { Text, View } from '@/components/Themed';
 import { useApplications } from '@/context/ApplicationContext';
 import { router } from 'expo-router';
+import { useTheme } from '@/constants/useThemes';
 
 export default function ApplicationsScreen() {
   const { applications, isLoading } = useApplications();
-
+  const { colors } = useTheme();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -19,7 +20,7 @@ export default function ApplicationsScreen() {
           </Text>
 
           <Pressable onPress={() => router.push('/add_application')}>
-            <View style={styles.addButton}>
+            <View style={[styles.addButton, { backgroundColor: colors.primary }]}>
               <Text style={styles.addButtonText}>Add Application</Text>
             </View>
           </Pressable>
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
 
   // Add button styles
   addButton: {
-    backgroundColor: '#2563eb',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

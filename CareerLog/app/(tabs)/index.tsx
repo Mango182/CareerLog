@@ -60,8 +60,8 @@ export default function DashboardScreen() {
 
             {/* Add Application Button */}
             <Pressable onPress={() => router.push('/add_application')}>
-              <View style={styles.addButton}>
-                <Text style={[styles.addButtonText]}>Add Application</Text>
+              <View style={[styles.addButton, { backgroundColor: colors.primary }]}>
+                <Text style={styles.addButtonText}>Add Application</Text>
               </View>
             </Pressable>
                 
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
 
   // Styling for the Add Application Button
   addButton: {
-    backgroundColor: '#2563eb',
     padding: 12,
     borderRadius: 8,
   },

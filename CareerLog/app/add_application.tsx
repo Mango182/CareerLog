@@ -91,7 +91,7 @@ export default function AddApplicationScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.safeArea]} edges={['top', 'left', 'right']}>
       <KeyboardAwareScrollView 
         style={styles.keyboardScrollView}
         contentContainerStyle={styles.scrollContent}
@@ -109,6 +109,7 @@ export default function AddApplicationScreen() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Company</Text>
           <FormInput
+            style={{backgroundColor: colors.card, color: colors.text}}
             placeholder="Enter company name"
             value={company}
             onChangeText={setCompany}
@@ -121,6 +122,7 @@ export default function AddApplicationScreen() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Position</Text>
           <FormInput
+            style={{backgroundColor: colors.card, color: colors.text}}
             ref={positionInputRef}
             placeholder="Enter job title"
             value={position}
@@ -134,6 +136,7 @@ export default function AddApplicationScreen() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Location</Text>
           <FormInput
+            style={{backgroundColor: colors.card, color: colors.text}}
             ref={locationInputRef}
             placeholder="Enter job location"
             value={location}
@@ -160,6 +163,7 @@ export default function AddApplicationScreen() {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Notes</Text>
           <FormInput
+            style={{backgroundColor: colors.card, color: colors.text}}
             ref={notesInputRef}
             placeholder="Enter any notes"
             value={notes}
