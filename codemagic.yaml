@@ -144,8 +144,8 @@ workflows:
         - github_credentials
       vars:
         APP_ENV: development
-        XCODE_SCHEME: CareerLog
-        XCODE_WORKSPACE: CareerLog.xcworkspace
+        XCODE_SCHEME: CareerLogDev
+        XCODE_WORKSPACE: CareerLogDev.xcworkspace
 
     scripts:
       - name: Install dependencies
