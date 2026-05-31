@@ -33,7 +33,7 @@ workflows:
 
       - name: Generate Android project
         script: |
-          npx expo prebuild --platform android --non-interactive
+          npx expo prebuild --platform android --non-interactive --clean
 
       - name: Build Android debug APK
         script: |
@@ -45,7 +45,7 @@ workflows:
       - android/app/build/outputs/apk/debug/*.apk
 
 
-  careerlog-ios-build:
+  careerlog-ios-altstore-build:
     name: CareerLog iOS AltStore IPA Build
     max_build_duration: 45
     instance_type: mac_mini_m2
@@ -72,6 +72,7 @@ workflows:
       vars:
         XCODE_SCHEME: CareerLog
         XCODE_WORKSPACE: CareerLog.xcworkspace
+        BUNDLE_ID: com.mango1823192.CareerLog
 
     scripts:
       - name: Install dependencies
@@ -84,158 +85,63 @@ workflows:
 
       - name: Generate iOS project
         script: |
-          npx expo prebuild --platform ios --non-interactive
-
-      - name: Patch Podfile
-        script: |
-          echo "use_modular_headers!" | cat - ios/Podfile > temp && mv temp ios/Podfile
-
-      - name: Show generated iOS files
-        script: |
-          echo "iOS folder contents:"
-          ls -la ios
+          npx expo prebuild --platform ios --non-interactive --clean
 
       - name: Install iOS pods
         script: |
-          cd ios
-          pod install
+          cd ios && pod install
 
       - name: Build unsigned iOS app
         script: |
           xcodebuild \
-            -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            -workspace "ios/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
             -destination "generic/platform=iOS" \
+            -derivedDataPath "$CM_BUILD_DIR/derivedData" \
             CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
             build
 
-      - name: Package unsigned iOS app as AltStore IPA
+      - name: Package as AltStore IPA
         script: |
-          mkdir -p build/ios/ipa/Payload
-
-          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release-iphoneos/*.app" -type d | head -n 1)
+          APP_PATH=$(find "$CM_BUILD_DIR/derivedData" \
+            -path "*/Build/Products/Release-iphoneos/$XCODE_SCHEME.app" \
+            -type d | head -n 1)
 
           if [ -z "$APP_PATH" ]; then
-            echo "No .app file found"
+            echo "ERROR: .app not found. Searching all .app files:"
+            find "$CM_BUILD_DIR/derivedData" -name "*.app" -type d
             exit 1
           fi
 
-          echo "Found app at: $APP_PATH"
+          echo "Found .app at: $APP_PATH"
 
-          cp -R "$APP_PATH" build/ios/ipa/Payload/CareerLog.app
+          mkdir -p "$CM_BUILD_DIR/ipa/Payload"
+          cp -R "$APP_PATH" "$CM_BUILD_DIR/ipa/Payload/$XCODE_SCHEME.app"
 
-          cd build/ios/ipa
-
+          cd "$CM_BUILD_DIR/ipa"
           /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog.ipa
 
-          echo "IPA file created:"
+          echo "IPA created:"
           ls -lh CareerLog.ipa
 
-          echo "IPA contents:"
-          unzip -l CareerLog.ipa | head -50
+      - name: Configure git
+        script: |
+          git config --global user.email "codemagic-bot@careerlog.com"
+          git config --global user.name "Codemagic Bot"
+          git remote set-url origin https://$GITHUB_TOKEN@github.com/Mango182/CareerLog.git
+
+      - name: Push IPA to GitHub
+        script: |
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+          mkdir -p runnables
+          cp "$CM_BUILD_DIR/ipa/CareerLog.ipa" runnables/CareerLog.ipa
+
+          git add runnables/CareerLog.ipa
+          git commit -m "ci: add iOS IPA build artifact [skip ci]"
+          git push origin "$BRANCH_NAME"
 
     artifacts:
-      - build/ios/ipa/*.ipa
-
-
-  careerlog-mobile-build:
-    name: CareerLog Android + iOS Build
-    max_build_duration: 60
-    instance_type: mac_mini_m2
-
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-          source: true
-        - pattern: master
-          include: true
-          source: true
-        - pattern: "feature/*"
-          include: true
-          source: true
-
-    environment:
-      node: 20
-      java: 17
-      xcode: latest
-      cocoapods: default
-
-      vars:
-        XCODE_SCHEME: CareerLog
-        XCODE_WORKSPACE: CareerLog.xcworkspace
-
-    scripts:
-      - name: Install dependencies
-        script: |
-          npm ci
-
-      - name: Check TypeScript
-        script: |
-          npx tsc --noEmit
-
-      - name: Generate native projects
-        script: |
-          npx expo prebuild --platform all --non-interactive
-
-      - name: Patch Podfile
-        script: |
-          echo "use_modular_headers!" | cat - ios/Podfile > temp && mv temp ios/Podfile
-
-      - name: Show generated iOS files
-        script: |
-          echo "iOS folder contents:"
-          ls -la ios
-
-      - name: Install iOS pods
-        script: |
-          cd ios
-          pod install
-
-      - name: Build Android debug APK
-        script: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Build unsigned iOS app
-        script: |
-          xcodebuild \
-            -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -destination "generic/platform=iOS" \
-            CODE_SIGNING_ALLOWED=NO \
-            build
-
-      - name: Package unsigned iOS app as AltStore IPA
-        script: |
-          mkdir -p build/ios/ipa/Payload
-
-          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" -path "*/Build/Products/Release-iphoneos/*.app" -type d | head -n 1)
-
-          if [ -z "$APP_PATH" ]; then
-            echo "No .app file found"
-            exit 1
-          fi
-
-          echo "Found app at: $APP_PATH"
-
-          cp -R "$APP_PATH" build/ios/ipa/Payload/CareerLog.app
-
-          cd build/ios/ipa
-
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload CareerLog.ipa
-
-          echo "IPA file created:"
-          ls -lh CareerLog.ipa
-
-          echo "IPA contents:"
-          unzip -l CareerLog.ipa | head -50
-
-    artifacts:
-      - android/app/build/outputs/apk/debug/*.apk
-      - build/ios/ipa/*.ipa
+      - $CM_BUILD_DIR/ipa/*.ipa
