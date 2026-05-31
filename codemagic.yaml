@@ -162,12 +162,12 @@ workflows:
 
       - name: Install iOS pods
         script: |
-          cd ios && pod install
+          cd "$CM_BUILD_DIR/CareerLog/ios" && pod install
 
       - name: Build unsigned iOS dev app
         script: |
           xcodebuild \
-            -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            -workspace "$CM_BUILD_DIR/CareerLog/ios/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Debug \
             -destination "generic/platform=iOS" \
@@ -258,12 +258,12 @@ workflows:
 
       - name: Install iOS pods
         script: |
-          cd ios && pod install
+          cd "$CM_BUILD_DIR/CareerLog/ios" && pod install
 
       - name: Build unsigned iOS release app
         script: |
           xcodebuild \
-            -workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+            -workspace "$CM_BUILD_DIR/CareerLog/ios/$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
             -destination "generic/platform=iOS" \
