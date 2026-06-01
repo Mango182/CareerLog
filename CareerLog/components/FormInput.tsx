@@ -4,19 +4,14 @@ import {
   TextInput,
   TextInputProps,
 } from 'react-native';
+import { useTheme } from '@/constants/useThemes';
 
 import { View } from '@/components/Themed';
-import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
 
 const FormInput = forwardRef<TextInput, TextInputProps>(
   ({ style, multiline, ...textInputProps }, ref) => {
-    const colorScheme = useColorScheme() ?? 'light';
-    const theme = Colors[colorScheme];
-    const isDark = colorScheme === 'dark';
+    const { colors } = useTheme();
 
-  const inputBorder = isDark ? '#334155' : '#d1d5db';
-  const placeholderColor = isDark ? '#94a3b8' : '#6b7280';
 
     return (
       <View style={styles.formGroup}>
@@ -26,12 +21,12 @@ const FormInput = forwardRef<TextInput, TextInputProps>(
             styles.input,
             multiline && styles.multilineInput,
             {
-              borderColor: inputBorder,
-              color: theme.text,
+              borderColor: colors.border,
+              color: colors.text,
             },
             style,
           ]}
-          placeholderTextColor={placeholderColor}
+          placeholderTextColor={colors.placeholder}
           multiline={multiline}
           textAlignVertical={multiline ? 'top' : 'center'}
           {...textInputProps}

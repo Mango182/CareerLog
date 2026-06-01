@@ -91,7 +91,7 @@ export default function AddApplicationScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea]} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
       <KeyboardAwareScrollView 
         style={styles.keyboardScrollView}
         contentContainerStyle={styles.scrollContent}
