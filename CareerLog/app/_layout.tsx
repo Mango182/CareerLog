@@ -6,10 +6,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
 import { ApplicationsProvider } from '@/context/ApplicationContext';
 import { AuthenticationProvider } from '@/context/AuthenticationContext';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { useTheme } from '@/constants/useThemes';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,10 +49,10 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <AuthenticationProvider>
         <ApplicationsProvider>
           <Stack>
