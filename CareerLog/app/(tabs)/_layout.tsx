@@ -7,6 +7,9 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs'
+import { Platform } from 'react-native';
+
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -17,45 +20,59 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Dashboard',
-          headerShown: false, // Hide the header for the Dashboard screen
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="applications"
-        options={{
-          title: 'Applications',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+  if (Platform.OS === 'ios') {
+    return (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <Icon sf="house.fill" />
+          <Label>Dashboard</Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="applications">
+          <Icon sf="briefcase.fill" />
+          <Label>Applications</Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    )
+  } else if (Platform.OS === 'android') {
+    return (
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          // Disable the static render of the header on web
+          // to prevent a hydration error in React Navigation v6.
+          headerShown: useClientOnlyValue(false, true),
+        }}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Dashboard',
+            headerShown: false, // Hide the header for the Dashboard screen
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerRight: () => (
+              <Link href="/modal" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="info-circle"
+                      size={25}
+                      color={Colors[colorScheme ?? 'light'].text}
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="applications"
+          options={{
+            title: 'Applications',
+            headerShown: false,
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          }}
+        />
+      </Tabs>
+    );
+  }
 }
