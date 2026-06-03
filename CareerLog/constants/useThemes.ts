@@ -1,6 +1,9 @@
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 
+const tintColorLight = '#2f95dc';
+const tintColorDark = '#fff';
+
 export function useTheme() {
   const colorScheme = useColorScheme() ?? 'light';
   const theme = Colors[colorScheme];
@@ -12,6 +15,9 @@ export function useTheme() {
     colorScheme,
     colors: {
       background: isDark ? '#0f172a' : '#f8fafc',
+      tint: tintColorLight,
+      tabIconDefault: '#ccc',
+      tabIconSelected: tintColorLight,
       card: isDark ? '#1e293b' : '#ebe8e8',
       modal: isDark ? '#1e293b' : '#ebe8e8',
       cardAlt: isDark ? '#1e293b' : '#ebe8e8',
