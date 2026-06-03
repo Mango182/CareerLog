@@ -1,10 +1,17 @@
 import { Text, View } from '@/components/Themed';
 import { useTheme } from '@/constants/useThemes';
 import { JobApplication } from '@/types/JobApplication';
-import { StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import EditApplicationModal from './EditApplicationModal';
+import { useApplications } from '@/context/ApplicationContext';
 
 export default function ApplicationCard({ application }: { application: JobApplication }) {
+  const { saveApplication } = useApplications();
   const { colors } = useTheme();
+  const [editing, setEditing] = useState(false);
+  
   return (
     <View style={styles.section}>
       <View
@@ -39,6 +46,18 @@ export default function ApplicationCard({ application }: { application: JobAppli
             <Text style={styles.detailText}>Created: {application.createdAt.toDateString()}</Text>
           )}
         </View>
+        <Pressable onPress={() => setEditing(true)} style={{ marginTop: 12 }}>
+          <Ionicons name="pencil-outline" size={20} color={colors.iconColor} />
+        </Pressable>
+
+        {editing && (
+          <EditApplicationModal
+            visible={editing}
+            Application={application}
+            onClose={() => setEditing(false)}
+            onSave={() => saveApplication(application)}
+          />
+        )}
       </View>
     </View>
   );

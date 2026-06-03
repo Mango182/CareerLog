@@ -8,11 +8,13 @@ import React, {
 import { useAuth } from '@/context/AuthenticationContext';
 import {
   addDoc,
+  updateDoc,
   collection,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  doc,
 } from 'firebase/firestore';
 
 
@@ -33,6 +35,7 @@ type ApplicationsContextValue = {
   applications: JobApplication[];
   isLoading: boolean;
   addApplication: (application: NewJobApplication) => Promise<void>;
+  saveApplication: (application: JobApplication) => Promise<void>;
 };
 
 const ApplicationsContext = createContext<ApplicationsContextValue | undefined>(
@@ -115,11 +118,29 @@ export function ApplicationsProvider({
     }
   }
 
+  // Save an existing application in Firestore
+  async function saveApplication(application: JobApplication) {
+    if (user) {
+      const applicationsRef = collection(db, 'users', user.uid, 'applications');
+      await updateDoc(doc(applicationsRef, application.id), {
+        company: application.company,
+        position: application.position,
+        status: application.status,
+        location: application.location ?? '',
+        notes: application.notes ?? '',
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      throw new Error('User must be authenticated to save applications.');
+    }
+  }
+
   // Value provided to the rest of the app
   const value: ApplicationsContextValue = {
     applications,
     isLoading,
     addApplication,
+    saveApplication,
   };
 
   return (
