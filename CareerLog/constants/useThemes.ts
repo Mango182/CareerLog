@@ -6,7 +6,7 @@ const tintColorDark = '#fff';
 
 export function useTheme() {
   const colorScheme = useColorScheme() ?? 'light';
-  const theme = Colors[colorScheme];
+  const theme = Colors[colorScheme as 'light' | 'dark'];
   const isDark = colorScheme === 'dark';
 
   return {
