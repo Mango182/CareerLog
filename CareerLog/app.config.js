@@ -3,6 +3,11 @@ export default ({ config }) => {
   return {
     ...config,
     name: isDev ? "CareerLog Dev" : "CareerLog",
+    plugins: [
+      ...(config.plugins ?? []),
+      "expo-font",
+      "expo-web-browser",
+    ],
     ios: {
       ...config.ios,
       bundleIdentifier: isDev
