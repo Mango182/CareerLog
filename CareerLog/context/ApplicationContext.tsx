@@ -15,6 +15,7 @@ import {
   query,
   serverTimestamp,
   doc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 
@@ -35,7 +36,8 @@ type ApplicationsContextValue = {
   applications: JobApplication[];
   isLoading: boolean;
   addApplication: (application: NewJobApplication) => Promise<void>;
-  saveApplication: (application: JobApplication) => Promise<void>;
+  updateApplication: (id: string, updates: Partial<NewJobApplication>) => Promise<void>;
+  deleteApplication: (id: string) => Promise<void>;
 };
 
 const ApplicationsContext = createContext<ApplicationsContextValue | undefined>(
@@ -119,20 +121,18 @@ export function ApplicationsProvider({
   }
 
   // Save an existing application in Firestore
-  async function saveApplication(application: JobApplication) {
-    if (user) {
-      const applicationsRef = collection(db, 'users', user.uid, 'applications');
-      await updateDoc(doc(applicationsRef, application.id), {
-        company: application.company,
-        position: application.position,
-        status: application.status,
-        location: application.location ?? '',
-        notes: application.notes ?? '',
-        updatedAt: serverTimestamp(),
-      });
-    } else {
-      throw new Error('User must be authenticated to save applications.');
-    }
+  async function updateApplication(id: string, updates: Partial<NewJobApplication>) {
+    if (!user) throw new Error('User must be authenticated.');
+    await updateDoc(doc(db, 'users', user.uid, 'applications', id), {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  // Delete an application from Firestore
+  async function deleteApplication(id: string) {
+    if (!user) throw new Error('User must be authenticated.');
+    await deleteDoc(doc(db, 'users', user.uid, 'applications', id));
   }
 
   // Value provided to the rest of the app
@@ -140,7 +140,8 @@ export function ApplicationsProvider({
     applications,
     isLoading,
     addApplication,
-    saveApplication,
+    updateApplication,
+    deleteApplication
   };
 
   return (

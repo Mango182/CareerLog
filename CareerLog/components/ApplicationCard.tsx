@@ -6,56 +6,76 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditApplicationModal from './EditApplicationModal';
 import { useApplications } from '@/context/ApplicationContext';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 export default function ApplicationCard({ application }: { application: JobApplication }) {
-  const { saveApplication } = useApplications();
+  const { deleteApplication } = useApplications();
   const { colors } = useTheme();
   const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   
   return (
     <View style={styles.section}>
-      <View
-        key={application.id}
-        style={[styles.applicationCard, { backgroundColor: colors.card }]}
-      >
+      <View style={[styles.applicationCard, { backgroundColor: colors.card }]}>
+        
         <View style={styles.cardHeader} lightColor="transparent" darkColor="transparent">
-          <View lightColor="transparent" darkColor="transparent">
+          {/* Left side */}
+          <View style={styles.cardLeft} lightColor="transparent" darkColor="transparent">
+            {/* Company and Positon */}
             <Text style={styles.companyName}>{application.company}</Text>
             <Text style={styles.positionTitle}>{application.position}</Text>
+
+            {/* Jobs details */}
+            <View style={styles.details} lightColor="transparent" darkColor="transparent">
+              {application.location && (
+                <Text style={styles.detailText}>{application.location}</Text>
+              )}
+              {application.jobType && (
+                <Text style={styles.detailText}>{application.jobType}</Text>
+              )}
+              {application.workMode && (
+                <Text style={styles.detailText}>{application.workMode}</Text>
+              )}
+              {application.createdAt && (
+                <Text style={styles.detailText}>{application.createdAt.toDateString()}</Text>
+              )}
+            </View>
           </View>
 
-          <View style={[styles.statusBadge, { backgroundColor: colors.status }]} lightColor="transparent" darkColor="transparent">
-            <Text style={styles.statusText}>{application.status}</Text>
+          {/* Right side */}
+          <View style={styles.cardRight} lightColor="transparent" darkColor="transparent">
+            {/* Application status */}
+            <View style={[styles.statusBadge, { backgroundColor: colors.status }]}>
+              <Text style={styles.statusText}>{application.status}</Text>
+            </View>
+
+            {/* Edit Button */}
+            <Pressable onPress={() => setEditing(true)}>
+              <Ionicons name="pencil-outline" size={18} color={colors.iconColor} />
+            </Pressable>
+
+            {/* Delete Button */}
+            <Pressable onPress={() => setDeleting(true)}>
+              <Ionicons name="trash-outline" size={18} color={colors.danger} />
+            </Pressable>
           </View>
         </View>
 
-        <View style={styles.details} lightColor="transparent" darkColor="transparent">
-          {application.location && (
-            <Text style={styles.detailText}>Location: {application.location}</Text>
-          )}
-
-          {application.jobType && (
-            <Text style={styles.detailText}>Type: {application.jobType}</Text>
-          )}
-
-          {application.workMode && (
-            <Text style={styles.detailText}>Work Mode: {application.workMode}</Text>
-          )}
-
-          {application.createdAt && (
-            <Text style={styles.detailText}>Created: {application.createdAt.toDateString()}</Text>
-          )}
-        </View>
-        <Pressable onPress={() => setEditing(true)} style={{ marginTop: 12 }}>
-          <Ionicons name="pencil-outline" size={20} color={colors.iconColor} />
-        </Pressable>
-
+        {/* Edit Application Modal */}
         {editing && (
           <EditApplicationModal
             visible={editing}
             Application={application}
             onClose={() => setEditing(false)}
-            onSave={() => saveApplication(application)}
+          />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleting && (
+          <DeleteConfirmationModal
+            visible={deleting}
+            onConfirm={() => deleteApplication(application.id)}
+            onCancel={() => setDeleting(false)}
           />
         )}
       </View>
@@ -64,56 +84,25 @@ export default function ApplicationCard({ application }: { application: JobAppli
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 100,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-
-  // Title and subtitle styles
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: 16,
-    marginTop: 8,
-    marginBottom: 24,
-    lineHeight: 22,
-  },
-
-  // Add button styles
-  addButton: {
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  addButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   section: {
     gap: 16,
   },
 
-  //
+  // Card styles
   applicationCard: {
     padding: 16,
     borderRadius: 12,
   },
+  // Header style
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+  },
+
+  // Left side of the card 
+  cardLeft: { 
+    flex: 1,
+    paddingRight: 12,
   },
   companyName: {
     fontSize: 18,
@@ -123,21 +112,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    alignSelf: 'flex-start',
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
   details: {
-    marginTop: 14,
+    marginTop: 12,
     gap: 4,
   },
   detailText: {
     fontSize: 14,
+  },
+
+  // Right side of the card
+  cardRight: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });

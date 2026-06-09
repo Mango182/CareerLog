@@ -17,13 +17,18 @@ type Props = {
   visible: boolean;
   Application: JobApplication,
   onClose: () => void;
-  onSave: () => void;
 };
 
-export default function EditApplicationModal({ visible, Application, onClose, onSave }: Props) {
-
-  const saveAndClose = () => {
-    onSave();
+export default function EditApplicationModal({ visible, Application, onClose }: Props) {
+  const { updateApplication } = useApplications();
+  const saveAndClose = async () => {
+    await updateApplication(Application.id, {
+      company,
+      position,
+      location,
+      status,
+      notes,
+    });
     onClose();
 
     Toast.show({
@@ -34,7 +39,6 @@ export default function EditApplicationModal({ visible, Application, onClose, on
     })
   };
 
-  const { applications } = useApplications();
   const { colors } = useTheme();
 
   const [company, setCompany] = useState(Application.company);
@@ -63,7 +67,6 @@ export default function EditApplicationModal({ visible, Application, onClose, on
             <KeyboardAwareScrollView
               enableResetScrollToCoords={false}
               style={styles.keyboardScrollView}
-              // contentContainerStyle={styles.scrollContent}
               enableOnAndroid={true}
               enableAutomaticScroll={true}
               keyboardShouldPersistTaps="handled"
