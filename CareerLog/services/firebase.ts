@@ -12,15 +12,27 @@ import {
 } from 'firebase/firestore';
 import { Platform } from 'react-native';
 
+const firebaseExtra = Constants.expoConfig?.extra?.firebase ?? {};
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDUtp5DDUF1MGhlilUtlPK4HTLcmAoGJfM",
-  authDomain: "careerlog-7ec0e.firebaseapp.com",
-  projectId: "careerlog-7ec0e",
-  storageBucket: "careerlog-7ec0e.firebasestorage.app",
-  messagingSenderId: "268417061830",
-  appId: "1:268417061830:web:82400f2b961e04915758c7",
-  measurementId: "G-0L58S6RT5F"
+  apiKey:
+    firebaseExtra.apiKey ?? process.env.EXPO_PUBLIC_FIREBASE_API_KEY ?? '',
+  authDomain:
+    firebaseExtra.authDomain ?? process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN ?? '',
+  projectId:
+    firebaseExtra.projectId ?? process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID ?? '',
+  storageBucket:
+    firebaseExtra.storageBucket ?? process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ?? '',
+  messagingSenderId:
+    firebaseExtra.messagingSenderId ?? process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? '',
+  appId: firebaseExtra.appId ?? process.env.EXPO_PUBLIC_FIREBASE_APP_ID ?? '',
+  measurementId:
+    firebaseExtra.measurementId ?? process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID ?? '',
 };
+
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+  throw new Error('Missing Firebase configuration. Set the EXPO_PUBLIC_FIREBASE_* environment variables.');
+}
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
