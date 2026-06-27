@@ -8,11 +8,14 @@ import React, {
 import { useAuth } from '@/context/AuthenticationContext';
 import {
   addDoc,
+  updateDoc,
   collection,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  doc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 
@@ -33,6 +36,8 @@ type ApplicationsContextValue = {
   applications: JobApplication[];
   isLoading: boolean;
   addApplication: (application: NewJobApplication) => Promise<void>;
+  updateApplication: (id: string, updates: Partial<NewJobApplication>) => Promise<void>;
+  deleteApplication: (id: string) => Promise<void>;
 };
 
 const ApplicationsContext = createContext<ApplicationsContextValue | undefined>(
@@ -115,11 +120,28 @@ export function ApplicationsProvider({
     }
   }
 
+  // Save an existing application in Firestore
+  async function updateApplication(id: string, updates: Partial<NewJobApplication>) {
+    if (!user) throw new Error('User must be authenticated.');
+    await updateDoc(doc(db, 'users', user.uid, 'applications', id), {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  // Delete an application from Firestore
+  async function deleteApplication(id: string) {
+    if (!user) throw new Error('User must be authenticated.');
+    await deleteDoc(doc(db, 'users', user.uid, 'applications', id));
+  }
+
   // Value provided to the rest of the app
   const value: ApplicationsContextValue = {
     applications,
     isLoading,
     addApplication,
+    updateApplication,
+    deleteApplication
   };
 
   return (

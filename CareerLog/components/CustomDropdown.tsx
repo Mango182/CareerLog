@@ -14,9 +14,11 @@ type CustomDropdownProps<T extends string> = {
   options: DropdownOption<T>[];
   placeholder?: string;
   onChange: (value: T) => void;
+  style?: any;
 };
 
 export default function CustomDropdown<T extends string> ({
+    style,
     value,
     options,
     placeholder = 'Select an option',
@@ -28,6 +30,7 @@ export default function CustomDropdown<T extends string> ({
         style={[
           styles.dropdown, 
           { backgroundColor: colors.card, borderColor: colors.border },
+          style
         ]}
         containerStyle={{ backgroundColor: colors.card }}
         itemContainerStyle={{ backgroundColor: colors.card }}
