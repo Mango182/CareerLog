@@ -13,6 +13,23 @@ export default function ApplicationCard({ application }: { application: JobAppli
   const { colors } = useTheme();
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  function statusColor(status: string) {
+    switch (status) {
+      case 'Applied':
+        return colors.applied;
+      case 'Interview':
+        return colors.interview;
+      case 'Offer':
+        return colors.offer;
+      case 'Rejected':
+        return colors.rejected;
+      default:
+        return colors.defaultStatus;
+    }
+  }
+
+  const statusColorValue = statusColor(application.status);
   
   return (
     <View style={styles.section}>
@@ -45,18 +62,18 @@ export default function ApplicationCard({ application }: { application: JobAppli
           {/* Right side */}
           <View style={styles.cardRight} lightColor="transparent" darkColor="transparent">
             {/* Application status */}
-            <View style={[styles.statusBadge, { backgroundColor: colors.status }]}>
+            <View style={[styles.statusBadge, { backgroundColor: statusColorValue }]}>
               <Text style={styles.statusText}>{application.status}</Text>
             </View>
 
             {/* Edit Button */}
             <Pressable onPress={() => setEditing(true)}>
-              <Ionicons name="pencil-outline" size={18} color={colors.iconColor} />
+              <Ionicons name="pencil-outline" size={20} padding={4} color={colors.iconColor} />
             </Pressable>
 
             {/* Delete Button */}
             <Pressable onPress={() => setDeleting(true)}>
-              <Ionicons name="trash-outline" size={18} color={colors.danger} />
+              <Ionicons name="trash-outline" size={20} padding={4} color={colors.danger} />
             </Pressable>
           </View>
         </View>

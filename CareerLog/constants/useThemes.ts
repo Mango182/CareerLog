@@ -31,6 +31,13 @@ export function useTheme() {
       iconColor: isDark ? '#fff' : '#000',
       status: isDark ? '#1e3a8a' : '#dbeafe',
       muted: isDark ? '#475569' : '#94a3b8',
+
+      // Application Status Colors
+      applied: isDark ? '#2563eb' : '#dbeafe',
+      interview: isDark ? '#facc15' : '#fef3c7',
+      offer: isDark ? '#16a34a' : '#dcfce7',
+      rejected: isDark ? '#ef4444' : '#fee2e2',
+      defaultStatus: isDark ? '#94a3b8' : '#e5e7eb',
     },
   };
 }
