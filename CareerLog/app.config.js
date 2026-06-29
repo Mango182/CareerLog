@@ -18,6 +18,11 @@ export default ({ config }) => {
     },
     plugins: [
       ...(config.plugins ?? []),
+      ["expo-build-properties", {
+        ios: {
+          useModularHeaders: true,
+        },
+      }],
       "expo-font",
       "expo-web-browser",
       ["expo-splash-screen", {

@@ -16,6 +16,7 @@
     "@react-native-documents/viewer": "^4.0.0",
     "@react-native-google-signin/google-signin": "^16.1.2",
     "expo": "^56.0.12",
+    "expo-build-properties": "~56.0.19",
     "expo-constants": "~56.0.18",
     "expo-dev-client": "~56.0.20",
     "expo-document-picker": "~56.0.4",
