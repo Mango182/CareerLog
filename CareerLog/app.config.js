@@ -20,6 +20,12 @@ export default ({ config }) => {
       ...(config.plugins ?? []),
       "expo-font",
       "expo-web-browser",
+      ["expo-splash-screen", {
+        "image": "./assets/images/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+      }],
+      "expo-status-bar",
     ],
     ios: {
       ...config.ios,
