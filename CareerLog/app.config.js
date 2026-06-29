@@ -1,6 +1,28 @@
-export default ({ config }) => {
+const { withDangerousMod } = require('@expo/config-plugins');
+const fs = require('fs');
+const path = require('path');
+
+const withGooglePodsModularHeaders = (config) =>
+  withDangerousMod(config, [
+    'ios',
+    (cfg) => {
+      const podfilePath = path.join(cfg.modRequest.platformProjectRoot, 'Podfile');
+      let podfile = fs.readFileSync(podfilePath, 'utf-8');
+      const injection =
+        "  pod 'GoogleUtilities', :modular_headers => true\n" +
+        "  pod 'RecaptchaInterop', :modular_headers => true";
+      if (!podfile.includes("pod 'GoogleUtilities', :modular_headers => true")) {
+        podfile = podfile.replace('use_expo_modules!', `use_expo_modules!\n${injection}`);
+        fs.writeFileSync(podfilePath, podfile);
+      }
+      return cfg;
+    },
+  ]);
+
+module.exports = ({ config }) => {
   const isDev = process.env.APP_ENV === "development";
-  return {
+
+  let appConfig = {
     ...config,
     name: isDev ? "CareerLog Dev" : "CareerLog",
     extra: {
@@ -26,9 +48,9 @@ export default ({ config }) => {
       "expo-font",
       "expo-web-browser",
       ["expo-splash-screen", {
-        "image": "./assets/images/splash-icon.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff",
+        image: "./assets/images/splash-icon.png",
+        resizeMode: "contain",
+        backgroundColor: "#ffffff",
       }],
       "expo-status-bar",
     ],
@@ -45,4 +67,8 @@ export default ({ config }) => {
         : "com.mango1823192.CareerLog",
     },
   };
+
+  appConfig = withGooglePodsModularHeaders(appConfig);
+
+  return appConfig;
 };
