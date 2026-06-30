@@ -68,10 +68,10 @@ export function ApplicationsProvider({
     // Reference to Firestore collection
     const applicationsRef = collection(db, 'users', user.uid, 'applications');
 
-    // Query for applications in descending order of creation
+    // Query for applications in descending order of update
     const applicationsQuery = query(
       applicationsRef,
-      orderBy('createdAt', 'desc')
+      orderBy('updatedAt', 'desc')
     );
 
     // runs when Firestore data changes
