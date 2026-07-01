@@ -33,6 +33,7 @@ export function useTheme() {
       muted: isDark ? '#475569' : '#94a3b8',
 
       // Application Status Colors
+      saved: isDark ? '#1e3a8a' : '#dbeafe',
       applied: isDark ? '#2563eb' : '#dbeafe',
       interview: isDark ? '#facc15' : '#fef3c7',
       offer: isDark ? '#16a34a' : '#dcfce7',
