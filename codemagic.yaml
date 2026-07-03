@@ -21,6 +21,7 @@ workflows:
       java: 17
       groups:
         - github_credentials
+        - firebase_credentials
       vars:
         APP_ENV: development
 
@@ -82,6 +83,7 @@ workflows:
       java: 17
       groups:
         - github_credentials
+        - firebase_credentials
       vars:
         APP_ENV: production
 
@@ -144,6 +146,7 @@ workflows:
       cocoapods: default
       groups:
         - github_credentials
+        - firebase_credentials
       vars:
         APP_ENV: development
         XCODE_SCHEME: CareerLogDev
@@ -241,6 +244,7 @@ workflows:
       cocoapods: default
       groups:
         - github_credentials
+        - firebase_credentials
       vars:
         APP_ENV: production
         XCODE_SCHEME: CareerLog

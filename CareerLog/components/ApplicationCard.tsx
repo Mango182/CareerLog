@@ -16,6 +16,8 @@ export default function ApplicationCard({ application }: { application: JobAppli
 
   function statusColor(status: string) {
     switch (status) {
+      case 'Saved':
+        return colors.saved;
       case 'Applied':
         return colors.applied;
       case 'Interview':
