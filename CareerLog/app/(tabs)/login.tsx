@@ -166,7 +166,7 @@ export default function LoginScreen() {
                   </TouchableOpacity>
 
                   {/* Forgot Password Link */}
-                  <TouchableOpacity onPress={() => router.push('/signup')}>
+                  <TouchableOpacity onPress={() => router.push('../signup')}>
                     <Text style={styles.forgotPassword}>Forgot Password?</Text>
                   </TouchableOpacity>
 
@@ -185,7 +185,7 @@ export default function LoginScreen() {
                   </TouchableOpacity>
 
                   {/* Sign Up Link */}
-                  <TouchableOpacity onPress={() => router.push('/signup')}>
+                  <TouchableOpacity onPress={() => router.push('../signup')}>
                     <Text style={styles.signUp}>
                       Don't have an account?{' '}
                       <Text style={styles.signUpLink}>Sign Up</Text>

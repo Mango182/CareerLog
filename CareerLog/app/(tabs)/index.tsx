@@ -32,16 +32,6 @@ export default function DashboardScreen() {
           <Text style={{textAlign: 'center', fontSize: 18, marginBottom: 8 }}>
             {user? `${user.email}` :  'Not signed in'}
           </Text>
-
-          {/* Profile Button */}
-          <Pressable onPress={() => router.push(user ? '/profile' : '/login')}>
-            <Ionicons
-              name={user ? 'person-circle' : 'person-circle-outline'}
-              size={24}
-              color={colors.iconColor}
-              style={{ alignSelf: 'flex-end' }}
-            />
-          </Pressable>
           
           {/* Title and Subtitle */}
           <Text style={styles.title} >Career Log</Text>
