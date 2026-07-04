@@ -1,4 +1,5 @@
 import EditLinksModal from '@/components/EditLinksModal';
+import LogoutConfirmationModal from '@/components/LogoutConfirmationModal';
 import ResumePreview from '@/components/ResumePreview';
 import { Text, View } from '@/components/Themed';
 import { useTheme } from '@/constants/useThemes';
@@ -9,7 +10,7 @@ import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -105,12 +106,14 @@ export default function Profile() {
     router.replace('/login');
   };
 
-    const { colors } = useTheme();
+  const { colors } = useTheme();
+
+  const [loggingOut, setLoggingOut] = useState(false);
 
   return (
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
-        <View style={styles.container}>
-          <View style={styles.profile}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.profile}>
+          <View style={styles.container}>
             <Ionicons name="person-circle" size={100} color={colors.iconColor} />
             <Text style={styles.displayNameLabel}>{user?.email}</Text>
             <Text style={styles.emailLabel}>{user?.email}</Text>
@@ -154,15 +157,23 @@ export default function Profile() {
             <View style={styles.resumePreview}>
               <ResumePreview />
             </View>
-          </View>
 
-          {/* Logout Button */}
-          <View style={styles.bottom}>
-            <Pressable style={styles.logoutButton} onPress={logoutAndRedirect}>
-              <Text style={styles.logoutButtonText}>Logout</Text>
-            </Pressable>
+            {/* Logout Button */}
+            <View style={styles.bottom}>
+              <Pressable style={styles.logoutButton} onPress={() => setLoggingOut(true)}>
+                <Text style={styles.logoutButtonText}>Logout</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </ScrollView>
+
+        {loggingOut && (
+          <LogoutConfirmationModal
+            visible={loggingOut}
+            onConfirm={logoutAndRedirect}
+            onCancel={() => setLoggingOut(false)}
+          />
+        )}
       </SafeAreaView>
   );
 }
@@ -172,12 +183,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    alignItems: 'center',
+  },
+  scroll: {
     flex: 1,
-    margin: 20,
   },
   profile: {
-    alignItems: 'center',
-    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   displayNameLabel: {
     fontSize: 24,
@@ -194,17 +208,17 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   resumePreview: {
+    width: '100%',
     marginTop: 32,
     alignItems: 'center',
   },
   bottom: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
+    alignSelf: 'stretch',
+    paddingTop: 12,
   },
   logoutButton: {
     backgroundColor: '#E53935',
+    width: '100%',
     padding: 12,
     borderRadius: 8,
     alignSelf: 'stretch',

@@ -10,6 +10,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { Platform } from 'react-native';
 
 const firebaseExtra = Constants.expoConfig?.extra?.firebase ?? {};
@@ -94,3 +95,5 @@ try {
 }
 
 export const db = firestoreDb;
+
+export const storage = getStorage(app);
