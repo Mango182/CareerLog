@@ -25,6 +25,7 @@ module.exports = ({ config }) => {
   let appConfig = {
     ...config,
     name: isDev ? "CareerLog Dev" : "CareerLog",
+    icon: isDev ? "./assets/images/icon_dev.png" : "./assets/images/icon.png",
     extra: {
       ...config.extra,
       appEnv: process.env.APP_ENV ?? "production",
@@ -65,6 +66,18 @@ module.exports = ({ config }) => {
       package: isDev
         ? "com.mango1823192.CareerLog.dev"
         : "com.mango1823192.CareerLog",
+      adaptiveIcon: {
+        ...config.android?.adaptiveIcon,
+        foregroundImage: isDev
+          ? "./assets/images/adaptive_icon_dev.png"
+          : "./assets/images/adaptive-icon.png",
+      },
+    },
+    web: {
+      ...config.web,
+      favicon: isDev
+        ? "./assets/images/favicon-dev.png"
+        : "./assets/images/favicon.png",
     },
   };
 
