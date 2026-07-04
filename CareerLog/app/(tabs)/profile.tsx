@@ -105,7 +105,7 @@ export default function Profile() {
     router.replace('/login');
   };
 
-    const { colors } = useTheme();
+  const { colors } = useTheme();
 
   return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>

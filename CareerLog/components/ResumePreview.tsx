@@ -1,10 +1,9 @@
 import { Text, View } from '@/components/Themed';
 import { useTheme } from '@/constants/useThemes';
-import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
+import Pdf from 'react-native-pdf';
 
 const RESUME_KEY = 'resume_url';
 
@@ -27,10 +26,6 @@ export default function ResumePreview() {
     setEditing(false);
   };
 
-  const openResume = async () => {
-    if (resumeUrl) await WebBrowser.openBrowserAsync(resumeUrl);
-  };
-
   if (editing || !resumeUrl) {
     return (
       <View style={styles.container}>
@@ -50,10 +45,11 @@ export default function ResumePreview() {
 
   return (
     <View style={styles.container}>
-      <Pressable style={[styles.resumeCard, { borderColor: colors.border }]} onPress={openResume}>
-        <Ionicons style={{color: colors.text}} name="document-text-outline" size={48} />
-        <Text style={styles.label}>View Resume</Text>
-      </Pressable>
+      <Pdf
+        source={{ uri: resumeUrl, cache: true }}
+        onError={(error) => console.log(error)}
+        style={[styles.pdf, { borderColor: colors.border }]}
+      />
       <Pressable onPress={() => { setInput(resumeUrl); setEditing(true); }}>
         <Text style={[styles.replaceText, {color: colors.primary}]}>Replace</Text>
       </Pressable>
@@ -83,17 +79,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  resumeCard: {
-    alignItems: 'center',
-    padding: 24,
+  pdf: {
+    width: '100%',
+    height: 400,
     borderWidth: 1,
     borderRadius: 12,
-    width: '100%',
-    gap: 8,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
   },
   replaceText: {
     fontSize: 14,
