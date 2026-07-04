@@ -11,7 +11,7 @@ export default function ApplicationsScreen() {
   const { applications, isLoading } = useApplications();
   const { colors } = useTheme();
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <Text style={styles.title}>Applications</Text>
