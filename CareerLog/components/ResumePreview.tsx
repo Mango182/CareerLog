@@ -4,9 +4,9 @@ import { useAuth } from '@/context/AuthenticationContext';
 import { db, storage } from '@/services/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
-import { File } from 'expo-file-system';
+import { File, UploadType } from 'expo-file-system';
 import { deleteField, doc, getDoc, setDoc } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, TextInput } from 'react-native';
 import Pdf from 'react-native-pdf';
@@ -73,10 +73,25 @@ export default function ResumePreview() {
 
     setUploading(true);
     try {
-      const bytes = new Uint8Array(await new File(picked.uri).arrayBuffer());
+      // Firebase Storage's JS SDK always wraps upload data in a Blob internally, which
+      // React Native's Blob polyfill can't construct from raw bytes. Upload straight to
+      // the Storage REST endpoint instead, so the file streams from disk natively.
       const path = `resumes/${user.uid}/resume.pdf`;
+      const bucket = storage.app.options.storageBucket;
+      const idToken = await user.getIdToken();
+      const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=${encodeURIComponent(path)}`;
+      const uploadResult = await new File(picked.uri).upload(uploadUrl, {
+        httpMethod: 'POST',
+        uploadType: UploadType.BINARY_CONTENT,
+        headers: {
+          'Content-Type': 'application/pdf',
+          Authorization: `Firebase ${idToken}`,
+        },
+      });
+      if (uploadResult.status < 200 || uploadResult.status >= 300) {
+        throw new Error(`Upload failed (${uploadResult.status}): ${uploadResult.body}`);
+      }
       const storageRef = ref(storage, path);
-      await uploadBytes(storageRef, bytes, { contentType: 'application/pdf' });
       const value = await getDownloadURL(storageRef);
       await saveResume({ type: 'file', value, path });
     } catch (err) {
