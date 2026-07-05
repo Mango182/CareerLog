@@ -46,6 +46,7 @@ module.exports = ({ config }) => {
           useModularHeaders: true,
         },
         android: {
+          networkInspector: false,
           packagingOptions: {
             pickFirst: [
               "lib/x86/libc++_shared.so",

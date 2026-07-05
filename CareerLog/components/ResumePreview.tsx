@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthenticationContext';
 import { db, storage } from '@/services/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
+import { File } from 'expo-file-system';
 import { deleteField, doc, getDoc, setDoc } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useEffect, useState } from 'react';
@@ -14,19 +15,6 @@ import Pdf from 'react-native-pdf';
 type ResumeSource =
   | { type: 'url'; value: string }
   | { type: 'file'; value: string; path: string };
-
-// fetch(uri).blob() can't construct a Blob from local file URIs on RN;
-// XMLHttpRequest's blob response type goes through RN's native Blob module instead.
-function uriToBlob(uri: string): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = () => resolve(xhr.response);
-    xhr.onerror = () => reject(new Error('Failed to read the selected file'));
-    xhr.responseType = 'blob';
-    xhr.open('GET', uri, true);
-    xhr.send(null);
-  });
-}
 
 // Convert share links to direct download links
 function toDirectPdfUrl(url: string): string {
@@ -85,10 +73,10 @@ export default function ResumePreview() {
 
     setUploading(true);
     try {
-      const blob = await uriToBlob(picked.uri);
+      const bytes = new Uint8Array(await new File(picked.uri).arrayBuffer());
       const path = `resumes/${user.uid}/resume.pdf`;
       const storageRef = ref(storage, path);
-      await uploadBytes(storageRef, blob);
+      await uploadBytes(storageRef, bytes, { contentType: 'application/pdf' });
       const value = await getDownloadURL(storageRef);
       await saveResume({ type: 'file', value, path });
     } catch (err) {
@@ -171,6 +159,7 @@ export default function ResumePreview() {
     <View style={styles.container}>
       <Pdf
         source={{ uri: resume.value, cache: false }}
+        trustAllCerts={false}
         onLoadComplete={(pages) => {
           console.log('Resume PDF loaded, pages:', pages);
           if (pages === 0) {
