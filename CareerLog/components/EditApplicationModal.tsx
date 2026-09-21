@@ -22,21 +22,30 @@ type Props = {
 export default function EditApplicationModal({ visible, Application, onClose }: Props) {
   const { updateApplication } = useApplications();
   const saveAndClose = async () => {
-    await updateApplication(Application.id, {
-      company,
-      position,
-      location,
-      status,
-      notes,
-    });
-    onClose();
+    try {
+      await updateApplication(Application.id, {
+        company,
+        position,
+        location: location ?? '',
+        status,
+        notes: notes ?? '',
+      });
+      onClose();
 
-    Toast.show({
-      type: 'success',
-      text1: 'Application Updated',
-      text2: 'Your job application has been updated.',
-      position: 'bottom',
-    })
+      Toast.show({
+        type: 'success',
+        text1: 'Application Updated',
+        text2: 'Your job application has been updated.',
+        position: 'bottom',
+      })
+    } catch (error) {
+      console.error('Error updating application:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to update application. Please try again.',
+        position: 'bottom',
+      });
+    }
   };
 
   const { colors } = useTheme();
