@@ -1,0 +1,198 @@
+name: Build CareerLog
+
+# Triggers build when pushing to master branch
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Only one build can be running at a time
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+# Build is from the 'CareerLog' Directory
+defaults:
+  run:
+    working-directory: CareerLog
+
+jobs:
+   
+  setup:
+    name: Pick environment
+    runs-on: ubuntu-latest
+    outputs: 
+      # App environment
+      app_env: ${{ steps.pick.outputs.app_env }}
+      # GitHub environment
+      gh_env: ${{ steps.pick.outputs.gh_env }}
+    steps:
+      - id: pick
+        working-directory: .
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo "app_env=production" >> "$GITHUB_OUTPUT"
+            echo "gh_env=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "app_env=development" >> "$GITHUB_OUTPUT"
+            echo "gh_env=development" >> "$GITHUB_OUTPUT"
+          fi
+
+  # TypeScript type checking job
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: CareerLog/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+  # Android build job
+  android:
+    name: Android (${{ needs.setup.outputs.app_env }})
+    # Depends on the setup and typecheck jobs
+    needs: [setup, typecheck]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: ${{ needs.setup.outputs.gh_env }}
+    # Environment variables for the Android build job
+    env:
+      APP_ENV: ${{ needs.setup.outputs.app_env }}
+      EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+      EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+      EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+      EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: CareerLog/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --non-interactive --clean
+
+      - name: Build APK
+        working-directory: CareerLog/android
+        run: |
+          chmod +x gradlew
+          if [ "$APP_ENV" = "production" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CareerLog-android-${{ env.APP_ENV }}
+          path: CareerLog/android/app/build/outputs/apk/**/*.apk
+          retention-days: 30
+
+  # iOS build job
+  ios:
+    name: iOS (${{ needs.setup.outputs.app_env }})
+    # Depends on the setup and typecheck jobs
+    needs: [setup, typecheck]
+    runs-on: macos-15
+    timeout-minutes: 45
+    environment: ${{ needs.setup.outputs.gh_env }}
+    # Environment variables for the iOS build job
+    env:
+      APP_ENV: ${{ needs.setup.outputs.app_env }}
+      XCODE_SCHEME: ${{ needs.setup.outputs.app_env == 'production' && 'CareerLog' || 'CareerLogDev' }}
+      XCODE_CONFIG: ${{ needs.setup.outputs.app_env == 'production' && 'Release' || 'Debug' }}
+      EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+      EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+      EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+      EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: CareerLog/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate iOS project
+        run: npx expo prebuild --platform ios --non-interactive --clean
+
+      - name: Install pods
+        working-directory: CareerLog/ios
+        run: pod install
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild \
+            -workspace "ios/$XCODE_SCHEME.xcworkspace" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration "$XCODE_CONFIG" \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$RUNNER_TEMP/derivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package as AltStore IPA
+        run: |
+          APP_PATH=$(find "$RUNNER_TEMP/derivedData" \
+            -path "*/Build/Products/$XCODE_CONFIG-iphoneos/$XCODE_SCHEME.app" \
+            -type d | head -n 1)
+
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: .app not found. All .app bundles:"
+            find "$RUNNER_TEMP/derivedData" -name "*.app" -type d
+            exit 1
+          fi
+
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/ipa/Payload/"
+          cd "$RUNNER_TEMP/ipa"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "CareerLog-$APP_ENV.ipa"
+          ls -lh "CareerLog-$APP_ENV.ipa"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CareerLog-ios-${{ env.APP_ENV }}
+          path: ${{ runner.temp }}/ipa/*.ipa
+          retention-days: 30
